@@ -3,7 +3,7 @@ class World {
 		this.bots=[]
 	}
 
-	startTournament(botsClasses, numGames){
+	startTournament(botsClasses, numGames, showLog=false){
 		this.bots.length=0;
 		//створюємо ботів для турніра
 		for (let i=0; i<botsClasses.length; i++){
@@ -13,19 +13,12 @@ class World {
 		this.tournamentScores={}
 
 		for (let i=0; i<numGames; i++){
-			this.startGame(null, false)
+			this.startGame(showLog)
 		}
 		console.log("Tournament results:", this.tournamentScores)
 	}
 
-	startGame(botsClasses, showLog=true){
-		if (botsClasses){
-			//створюємо ботів для гри
-			for (let i=0; i<botsClasses.length; i++){
-				let b = new botsClasses[i](botsClasses[i].name+"_"+i);
-				this.bots.push(b)
-			}			
-		}
+	startGame(showLog=true){
 		//боти вже є
 		this.initNewGamePosition();
 
