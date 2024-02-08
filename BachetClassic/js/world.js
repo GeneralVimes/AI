@@ -4,16 +4,29 @@ class World {
 	}
 
 	startTournament(botsClasses, numGames){
-		
-	}
-
-	startGame(botsClasses){
 		this.bots.length=0;
-		//створюємо ботів для гри
+		//створюємо ботів для турніра
 		for (let i=0; i<botsClasses.length; i++){
 			let b = new botsClasses[i](botsClasses[i].name+"_"+i);
 			this.bots.push(b)
 		}
+		this.tournamentScores={}
+
+		for (let i=0; i<numGames; i++){
+			this.startGame(null, false)
+		}
+		console.log("Tournament results:", this.tournamentScores)
+	}
+
+	startGame(botsClasses, showLog=true){
+		if (botsClasses){
+			//створюємо ботів для гри
+			for (let i=0; i<botsClasses.length; i++){
+				let b = new botsClasses[i](botsClasses[i].name+"_"+i);
+				this.bots.push(b)
+			}			
+		}
+		//боти вже є
 		this.initNewGamePosition();
 
 		this.randomizeMoveOrder();
@@ -23,13 +36,13 @@ class World {
 		while(!this.isGameOver()){//ходи продовжуємо, поки гра триває
 			//будуємо ситуація для показу боту
 			let ob = this.buildCurrentGameSituation()
-			console.log("Situation ",ob)
+			if (showLog)console.log("Situation ",ob)
 			//який бот зараз ходить
-			console.log("Bot ",currentBotId, "moves")
+			if (showLog)console.log("Bot ",currentBotId, "moves")
 			let bot = this.bots[currentBotId]
 			//показуємо боту ситуація та отримуємо від нього хід
 			let botMove = bot.makeMoveForSituation(ob)
-			console.log("Bot Move: ",botMove)
+			if (showLog)console.log("Bot Move: ",botMove)
 			//якщо хід задовольняє правилам
 			if (this.validateMove(botMove)){
 				//виконуємо цей хід
@@ -37,7 +50,7 @@ class World {
 				//якщо хід привів до завершення гри
 				if (this.isGameOver()){
 					//визначаємо, хто виграв, хто програв
-					this.calculateGamePoints()
+					this.calculateGamePoints(currentBotId)
 				}else{
 					//якщо ні, визначаємо наступного гравця, який буде ходити
 					currentBotId++;
@@ -81,7 +94,7 @@ class World {
 		return {}
 	}
 
-	calculateGamePoints(){
+	calculateGamePoints(currentBotId){
 	
 	}
 }
@@ -143,5 +156,28 @@ class BachetWorld extends World{
 
 	initNewGamePosition(){
 		this.N = Math.floor(50+Math.random()*50)
+	}	
+
+	calculateGamePoints(currentBotId){
+		let lastMovedBot = this.bots[currentBotId];
+		if (this.tournamentScores[lastMovedBot.myName]){
+			this.tournamentScores[lastMovedBot.myName]++
+		}else{
+			this.tournamentScores[lastMovedBot.myName]=1
+		}
+	}
+
+	stopGameAfterBotError(botId){
+		//перемога всім іншим
+		for (let i=0; i<this.bots.length; i++){
+			if (i!=botId){
+				let bot = this.bots[i];
+				if (this.tournamentScores[bot.myName]){
+					this.tournamentScores[bot.myName]++
+				}else{
+					this.tournamentScores[bot.myName]=1
+				}				
+			}
+		}
 	}	
 }
