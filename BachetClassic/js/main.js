@@ -1,7 +1,7 @@
 window.onload=function(){
 	console.log("Hello")
-	let world = new BachetWorld();
-	world.startTournament([BachetBot1, BachetBot2],100)
+	let world = new BachetWorld([1,2,3,4])
+	world.startTournament([Bot_3, Bot_4],1000)
 /*
 	let obs={}
 	for (let i=0; i<1000000; i++){

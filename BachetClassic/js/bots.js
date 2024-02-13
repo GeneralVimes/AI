@@ -29,3 +29,25 @@ class myBot extends Bot{
 		// return {n:_якесь число яке бот має взяти з купи___}
 	}	
 }
+
+class Bot_3 extends Bot{
+	makeMoveForSituation(gameDataOb){
+		let num = gameDataOb.N;
+		let res = num % 4;
+		if (res == 0) {
+			res = Math.floor(1 + Math.random() * 3);
+		}
+		return {n: res};
+	}
+}
+
+class Bot_4 extends Bot{
+	makeMoveForSituation(gameDataOb){
+		let num = gameDataOb.N;
+		let res = num % 5;
+		if (res == 0) {
+			res = Math.floor(1 + Math.random() * 4);
+		}
+		return {n: res};
+	}
+}

@@ -108,11 +108,12 @@ class World {
 //після завершення турніру видаємо результати
 
 class BachetWorld extends World{
-	constructor(){
+	constructor(validMoves){
 		super()
 		console.log("BachetWorld created")
 
 		this.N = 100;
+		this.validMoves = validMoves;
 	}
 
 	isGameOver(){
@@ -125,19 +126,13 @@ class BachetWorld extends World{
 	}
 	//moveOb має бути {n:1..3}
 	validateMove(moveOb){
-		let res = true;
+		let res = false;
 		if (moveOb["n"]){
 			if (Math.floor(moveOb["n"])===moveOb["n"]){
-				if (moveOb["n"]>=1 && moveOb["n"]<=3){
+				if (this.validMoves.includes(moveOb["n"])){
 					res=true;
-				}else{
-					res=false;
 				}
-			}else{
-				res=false;
 			}
-		}else{
-			res=false;
 		}
 
 		return res
@@ -145,11 +140,11 @@ class BachetWorld extends World{
 
 	buildCurrentGameSituation(){
 		return {N:this.N}
-	}	
+	}
 
 	initNewGamePosition(){
 		this.N = Math.floor(50+Math.random()*50)
-	}	
+	}
 
 	calculateGamePoints(currentBotId){
 		let lastMovedBot = this.bots[currentBotId];
@@ -169,8 +164,8 @@ class BachetWorld extends World{
 					this.tournamentScores[bot.myName]++
 				}else{
 					this.tournamentScores[bot.myName]=1
-				}				
+				}
 			}
 		}
-	}	
+	}
 }
