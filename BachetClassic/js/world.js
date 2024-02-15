@@ -24,6 +24,8 @@ class World {
 
 		this.randomizeMoveOrder();
 
+		this.informBotsOfGameStart()
+
 		//доки гра не закінчена, робимо ходи
 		let currentBotId = 0;
 		while(!this.isGameOver()){//ходи продовжуємо, поки гра триває
@@ -52,6 +54,7 @@ class World {
 			}else{
 				//якщо хід не задовольняє правилам, то зупиняємо гру, зарахувавши боту програш
 				this.stopGameAfterBotError(currentBotId);
+				break;
 			}
 		}
 	}
@@ -89,6 +92,45 @@ class World {
 
 	calculateGamePoints(currentBotId){
 	
+	}
+
+	informBotsOfGameStart(){
+		for (let i=0; i<this.bots.length; i++){
+			let bot = this.bots[i];
+			bot.getInformedOfGameStart();
+		}
+	}
+	//дати перемогу у грі боту з індексом botId
+	giveVictoryToSingleBot(botId){
+		for (let i=0; i<this.bots.length; i++){
+			let bot = this.bots[i];
+			if (i==botId){
+				if (this.tournamentScores[bot.myName]){
+					this.tournamentScores[bot.myName]++
+				}else{
+					this.tournamentScores[bot.myName]=1
+				}
+				bot.getInformedOfVictory()
+			}else{
+				bot.getInformedOfDefeat()
+			}
+		}
+	}
+	//дати перемогу у грі усім ботам окрім бота з індексом botId
+	giveDefeatToSingleBot(botId){
+		for (let i=0; i<this.bots.length; i++){
+			let bot = this.bots[i];
+			if (i!=botId){
+				if (this.tournamentScores[bot.myName]){
+					this.tournamentScores[bot.myName]++
+				}else{
+					this.tournamentScores[bot.myName]=1
+				}	
+				bot.getInformedOfVictory()		
+			}else{
+				bot.getInformedOfDefeat()
+			}
+		}	
 	}
 }
 //що має вміти ігровий світ?
@@ -129,7 +171,11 @@ class BachetWorld extends World{
 		if (moveOb["n"]){
 			if (Math.floor(moveOb["n"])===moveOb["n"]){
 				if (moveOb["n"]>=1 && moveOb["n"]<=3){
-					res=true;
+					if (moveOb["n"]<=this.N){
+						res=true;
+					}else{
+						res=false;
+					}
 				}else{
 					res=false;
 				}
@@ -152,25 +198,11 @@ class BachetWorld extends World{
 	}	
 
 	calculateGamePoints(currentBotId){
-		let lastMovedBot = this.bots[currentBotId];
-		if (this.tournamentScores[lastMovedBot.myName]){
-			this.tournamentScores[lastMovedBot.myName]++
-		}else{
-			this.tournamentScores[lastMovedBot.myName]=1
-		}
+		this.giveVictoryToSingleBot(currentBotId)
 	}
 
 	stopGameAfterBotError(botId){
 		//перемога всім іншим
-		for (let i=0; i<this.bots.length; i++){
-			if (i!=botId){
-				let bot = this.bots[i];
-				if (this.tournamentScores[bot.myName]){
-					this.tournamentScores[bot.myName]++
-				}else{
-					this.tournamentScores[bot.myName]=1
-				}				
-			}
-		}
+		this.giveDefeatToSingleBot(botId)
 	}	
 }
