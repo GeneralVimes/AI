@@ -33,7 +33,7 @@ class World {
 			let ob = this.buildCurrentGameSituation()
 			if (showLog)console.log("Situation ",ob)
 			//який бот зараз ходить
-			if (showLog)console.log("Bot ",currentBotId, "moves")
+			if (showLog)console.log("Bot ",currentBotId,this.bots[currentBotId].myName , "moves")
 			let bot = this.bots[currentBotId]
 			//показуємо боту ситуація та отримуємо від нього хід
 			let botMove = bot.makeMoveForSituation(ob)
@@ -205,4 +205,32 @@ class BachetWorld extends World{
 		//перемога всім іншим
 		this.giveDefeatToSingleBot(botId)
 	}	
+}
+
+class UniversalBachetWorld extends BachetWorld{
+	constructor(movesAr=[1,2,3], isLastMoveWinner=true){
+		super()
+		this.allowedMoves=movesAr;
+		this.isLastPlayerWinner=isLastMoveWinner;
+	}
+	validateMove(moveOb){
+		let res=false;
+		if (moveOb["n"]){
+			if (this.allowedMoves.indexOf(moveOb.n)!=-1){//якщо зроблений гравцем хід є серед дозволених
+				if (moveOb.n<=this.N){
+					res=true;
+				}
+			}
+		}
+		return res;
+	}
+	//ця функція викликається після ходу, яких завершує гру
+	calculateGamePoints(currentBotId){
+		//currentBotId - номер бота, який зробив останній хід
+		if (this.isLastPlayerWinner){
+			this.giveVictoryToSingleBot(currentBotId)
+		}else{
+			this.giveDefeatToSingleBot(currentBotId)
+		}
+	}
 }

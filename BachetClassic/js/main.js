@@ -1,8 +1,10 @@
 window.onload=function(){
 	console.log("Hello")
-	window.world = new BachetWorld();
+	// window.world = new BachetWorld();
 	// world.startTournament([BachetBot1, BachetBot2],100)
-	window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1000)
+	// window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1000)
+	window.world = new UniversalBachetWorld([1,2,3],false);
+	window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1, true)
 /*
 	let obs={}
 	for (let i=0; i<1000000; i++){
