@@ -1,8 +1,65 @@
 class World {
 	constructor(){
-		this.bots=[]
+		this.bots=[]//боти для конкретної серії ігор
+		this.allBots=[]//боти для великого турніру. Звідси будуть бартися боти по двоє і запускатися серія ігор
+		this.allBotsResults=[];//бали ботів у великому турнірі, у такому ж порядку, як і їхні номери у списку this.allBots
+		this.tournamentScores={}//асоційований об'єкт: бали ботів у турнірі по їх іменах
 	}
-
+	//службова функція - вибір m чисел з масиву unselected до масиву selected
+	recursivelySelect(res, m, selected, unselected){
+		if (m==0){
+			res.push(selected);
+			return;
+		}
+		for (let i=0; i<=unselected.length-m; i++){
+			let a = unselected[i];
+            let newSelected = selected.slice()
+            newSelected.push(a)
+			this.recursivelySelect(res, m-1, newSelected, unselected.slice(i+1))
+		}
+	}
+	//службова функція - перерахувати усі способи вибору m чисел з m
+	listSelectionsOfMFromN(m, n){
+		let res=[];
+		let ar2Select=[];
+		for (let i=0; i<n; i++){
+			ar2Select.push(i);
+		}
+		this.recursivelySelect(res,m,[],ar2Select)
+		return res;
+	}
+	/**
+	 * 
+	 * @param {*} bots // які боти будуть брати участь у великому турнірі
+	 * @param {*} numGames //скільки ігор проводити між кожною підгрупою ботів
+	 * @param {*} numBotsInOneGame //по скільки ботів з загального списку обирати, щоб провести серію ігор
+	 * @param {*} showLog //чи виводити лог
+	 */
+	startTournamentBetweenBots(bots, numGames, numBotsInOneGame=2, showLog=false){
+		this.allBots = bots;
+		this.allBotsResults=[];
+		this.tournamentScores={}
+		for (let i=0; i<this.allBots.length; i++){
+			this.allBotsResults.push(0);
+		}
+		let botsIdsInGames = this.listSelectionsOfMFromN(numBotsInOneGame,this.allBots.length);
+		//визначаємо всі способи обрати по numBotsInOneGame серед всіх ботів
+		for (let i=0; i<botsIdsInGames.length; i++){
+			let usedBotsInThisGame=botsIdsInGames[i];
+			this.bots=[];
+			for (let j=0; j<usedBotsInThisGame.length; j++){
+				this.bots.push(this.allBots[usedBotsInThisGame[j]]);
+			}
+			//обираємо ботів для поточної серіїї ігор з загального списку ботів
+			for (let i=0; i<numGames; i++){
+				this.startGame(showLog)
+			}			
+		}
+		//виводимо результати турніру
+		console.log("Bots Tournament results:",this.allBotsResults);
+		console.log("Tournament results:", this.tournamentScores)
+	}
+	//простіший турнір для порівняння поведінки класів ботів
 	startTournament(botsClasses, numGames, showLog=false){
 		this.bots.length=0;
 		//створюємо ботів для турніра
@@ -110,6 +167,12 @@ class World {
 				}else{
 					this.tournamentScores[bot.myName]=1
 				}
+
+				let bid = this.allBots.indexOf(bot)
+				if (bid!=-1){
+					this.allBotsResults[bid]+=1
+				}
+				
 				bot.getInformedOfVictory()
 			}else{
 				bot.getInformedOfDefeat()
@@ -126,7 +189,13 @@ class World {
 				}else{
 					this.tournamentScores[bot.myName]=1
 				}	
-				bot.getInformedOfVictory()		
+				
+				let bid = this.allBots.indexOf(bot)
+				if (bid!=-1){
+					this.allBotsResults[bid]+=1
+				}
+
+				bot.getInformedOfVictory()	
 			}else{
 				bot.getInformedOfDefeat()
 			}
@@ -224,6 +293,18 @@ class UniversalBachetWorld extends BachetWorld{
 		}
 		return res;
 	}
+	//гра завершена, коли каміння залишилося менше, ніж найменший можливий хід
+	isGameOver(){
+		let res=true;
+		for (let i=0; i<this.allowedMoves.length; i++){
+			if (this.allowedMoves[i]<=this.N){
+				res=false;
+				break;
+			}
+		}
+
+		return res;
+	}	
 	//ця функція викликається після ходу, яких завершує гру
 	calculateGamePoints(currentBotId){
 		//currentBotId - номер бота, який зробив останній хід
