@@ -61,6 +61,18 @@ class myBot extends Bot{
 	}	
 }
 
+class Bot123 extends Bot{
+	makeMoveForSituation(gameDataOb){//
+		if (gameDataOb.N%4==0){
+			return {n:1+Math.floor(Math.random()*2)}
+		}else{
+			return {n:gameDataOb.N%4}
+		}
+		
+		// return {n:_якесь число яке бот має взяти з купи___}
+	}	
+}
+
 class BachetLearnerBot extends Bot{
 	static memory=[];//статичне поле, до якого мають доступ всі екземпляри класу
 	/*
@@ -129,9 +141,13 @@ class BachetLearnerBot extends Bot{
 			let memOb = BachetLearnerBot.memory[moveOb.N]
 			memOb[moveOb.n]-=1;
 			if (memOb[moveOb.n]==0){
-				memOb[1]+=1;
-				memOb[2]+=1;
-				memOb[3]+=1;
+				let s=memOb[1]+memOb[2]+memOb[3];
+				if (s<10){
+					memOb[1]+=1;
+					memOb[2]+=1;
+					memOb[3]+=1;
+				}
+				
 			}
 		}		
 	}	

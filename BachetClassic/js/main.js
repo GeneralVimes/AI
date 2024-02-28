@@ -3,8 +3,17 @@ window.onload=function(){
 	// window.world = new BachetWorld();
 	// world.startTournament([BachetBot1, BachetBot2],100)
 	// window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1000)
-	window.world = new UniversalBachetWorld([1,2,3],false);
-	window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1, true)
+	window.world = new UniversalBachetWorld([1,2,3],true);
+	// window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1, true)
+	// window.world.startTournamentBetweenBots([new BachetBotRandom("A"), new BachetBotRandomFixed("B"), new BachetBotRandomFixed("C")],1000,2,false)
+	//провести турнір між ботами із заданою поведінкою та еволюційними ботами
+	window.world.startTournamentBetweenBots([new BachetBot1("BOT1"), new BachetBotRandom("RND1"),  new BachetBotRandomFixed("RND2"), new Bot123("BEST"), new BachetLearnerBot("LEARN"), new EvoBot("A1"), new EvoBot("A2"),new EvoBot("A3"),new EvoBot("A4"),new EvoBot("A5")],1000,2,false)
+	//залишити лише 5 еволюційних ботів з кращими результатами
+	//window.world.keepNoMoreThanKBestBotsOfClass(EvoBot,10)
+	//створити нових еволюційних ботів на основі тих, що пройшли відбір
+	// window.world.createDescendantsOfBotsOfClass(EvoBot,"B")
+	//тепер треба повторити турнір
+	//та подивитися, чи нові еволюційні боти дадуть кращий результат
 /*
 	let obs={}
 	for (let i=0; i<1000000; i++){

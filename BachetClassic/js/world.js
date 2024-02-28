@@ -201,6 +201,71 @@ class World {
 			}
 		}	
 	}
+
+	//за результатами турніру видаляємо усіх ботів класу botClass, які не потрапили у K кращих
+	keepNoMoreThanKBestBotsOfClass(botClass, K=10){
+		//боти, що не відносяться до класу botClass залишаються
+		let otherBots=[]
+		//боти, що відносяться до класу botClass залишаються якщо потрапляють у К кращих
+		let bots2Keep=[];
+		let botsScores2Keep=[];
+		for (let i=0; i<this.allBots.length; i++){
+			let bot = this.allBots[i];
+			if (bot instanceof botClass){
+				let score = this.allBotsResults[i];
+				let needsSorting=false;
+				if (bots2Keep.length<K){
+					bots2Keep.push(bot)
+					botsScores2Keep.push(score)
+					needsSorting=true;
+				}else{
+					if (botsScores2Keep[botsScores2Keep.length-1]<score){
+						botsScores2Keep[botsScores2Keep.length-1]=score;
+						bots2Keep[bots2Keep.length-1]=bot;
+						needsSorting=true
+					}
+				}
+				if (needsSorting){
+					for (let j=botsScores2Keep.length-1; j>=1; j--){
+						if (botsScores2Keep[j-1]<botsScores2Keep[j]){
+							let t = botsScores2Keep[j-1];
+							botsScores2Keep[j-1]=botsScores2Keep[j]
+							botsScores2Keep[j]=t
+
+							let b = bots2Keep[j-1];
+							bots2Keep[j-1]=bots2Keep[j]
+							bots2Keep[j]=b;
+						}
+					}
+				}
+			}else{
+				otherBots.push(bot)
+			}
+		}
+
+		this.allBots=otherBots;
+		for (let i=0; i<bots2Keep.length; i++){
+			this.allBots.push(bots2Keep[i]);
+		}
+	}
+
+	createDescendantsOfBotsOfClass(botClass, nameStart="A"){
+		let len = this.allBots.length
+		for (let i=0; i<len-1; i++){
+			let b1 = this.allBots[i];
+			if (b1 instanceof botClass){
+				let b = new botClass(nameStart+"_"+i, b1)
+				this.allBots.push(b)
+				for (let j=i+1; j<len; j++){
+					let b2 = this.allBots[j];
+					if (b2 instanceof botClass){
+						let b = new botClass(nameStart+"_"+i+"_"+j, b1, b2)
+						this.allBots.push(b)
+					}
+				}
+			}
+		}
+	}
 }
 //що має вміти ігровий світ?
 //влаштовувати турнір між ботами
