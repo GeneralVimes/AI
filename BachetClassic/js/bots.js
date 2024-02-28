@@ -18,6 +18,10 @@ class Bot{
 	getInformedOfDefeat(){
 	
 	}
+	//службова функція для визначення випадкового числа
+	randomNumberFromToIncl(a,b){
+		return a+Math.floor(Math.random()*(b-a+1));
+	}
 }
 
 class BachetBot1 extends Bot{
@@ -130,5 +134,148 @@ class BachetLearnerBot extends Bot{
 				memOb[3]+=1;
 			}
 		}		
+	}	
+}
+//бот, що вміє еволюціонувати
+class EvoBot extends Bot{
+	constructor(nm, b1, b2){
+		super(nm)
+		//може бути свторений просто так, а можуть бути вказані 1 чи 2 батьківських ботів
+		//масив правид, "ДНК" бота, що визначає його поведінку
+		this.rules=[]
+		if (b1){
+			if (b2){
+				//якщо задані обидва батьківських боти, то масив правил визначається з батьківських правил схрещуванням
+				let rulesDiv2 = this.randomNumberFromToIncl(Math.floor(b2.rules.length*0.2), Math.floor(b2.rules.length*0.8));
+				let rulesDiv1 = this.randomNumberFromToIncl(Math.floor(b1.rules.length*0.2), Math.floor(b1.rules.length*0.8));
+				if (Math.random()<0.5){
+					for (let i=0; i<rulesDiv1; i++){
+						this.createNewRule(b1.rules[i])
+					}
+					for (let i=rulesDiv2; i<b2.rules.length; i++){
+						this.createNewRule(b2.rules[i])
+					}
+				}else{
+					for (let i=0; i<rulesDiv2; i++){
+						this.createNewRule(b2.rules[i])
+					}
+					for (let i=rulesDiv1; i<b1.rules.length; i++){
+						this.createNewRule(b1.rules[i])
+					}				
+				}
+			}else{
+				//якщо батьківський бот один, то кипіюємо правила з нього, а потім робимо випадкову мутацію
+				for (let i=0; i<b1.rules.length; i++){
+					this.createNewRule(b1.rules[i])
+				}
+
+				let mutationId = this.randomNumberFromToIncl(0,5);
+				switch (mutationId){
+					case 0:{//міняємо а у випадковому правилі
+						let rid = Math.floor(Math.random()*this.rules.length);
+						this.rules[rid].a = 2+Math.floor(Math.random()*8);
+						break;
+					}
+					case 1:{//міняємо b у випадковому правилі
+						let rid = Math.floor(Math.random()*this.rules.length);
+						this.rules[rid].b = Math.floor(Math.random()*this.rules[rid].a);
+						break;
+					}
+					case 2:{//міняємо c у випадковому правилі
+						let rid = Math.floor(Math.random()*this.rules.length);
+						this.rules[rid].c = [1,2,3][Math.floor(Math.random()*3)]
+						break;
+					}
+					case 3:{//видаляємо випадкове правило
+						let rid = Math.floor(Math.random()*this.rules.length);
+						this.rules.splice(rid,1)
+						break;
+					}
+					case 4:{//створюємо нове випадкове правило
+						this.createNewRule()
+						break;
+					}
+					case 5:{//міняємо 2 правила місцями
+						let rid1 = Math.floor(Math.random()*this.rules.length);
+						let rid2 = Math.floor(Math.random()*this.rules.length);
+						let t = this.rules[rid1]
+						this.rules[rid1] = this.rules[rid2]
+						this.rules[rid2] = t
+						break;
+					}
+				}
+
+			}
+		}else{
+			//усі правила виглядають так: якщо N%a==b, взяти c
+			for (let i=0; i<10; i++){
+				this.createNewRule();
+			}		
+		}
+	}
+
+	createNewRule(r){
+		let a = 2+Math.floor(Math.random()*8);
+		let b = Math.floor(Math.random()*a);
+		let c = [1,2,3][Math.floor(Math.random()*3)]	
+		if (r){
+			a = r.a;
+			b = r.b;
+			c = r.c;
+		}
+
+		this.rules.push({a:a,b:b,c:c});	
+	}
+	//бот перебирає наявні правила, якщо знайде підходяще - виконає його, а якщо ні - зробить випадковий хід
+	makeMoveForSituation(gameDataOb){
+		let res = 1+Math.floor(Math.random()*3);
+		for (let i=0; i<this.rules.length; i++){
+			if (gameDataOb.N%this.rules[i].a==this.rules[i].b){
+				res = this.rules[i].c;
+				break;
+			}
+		}
+		return {n:res};
+	}
+}
+
+//аналогічний бот, що вміє еволюціонувати
+class EvoBot2 extends Bot{
+	constructor(nm, b1, b2){
+		super(nm)
+		//правила тут - масив зі 100 чисел, що містить ходи, які треба робити з усіх N
+		this.rules=[]
+		if (b1){
+			if (b2){
+				let rulesDiv = this.randomNumberFromToIncl(Math.floor(b2.rules.length*0.2), Math.floor(b2.rules.length*0.8));
+				if (Math.random()<0.5){
+					for (let i=0; i<rulesDiv; i++){
+						this.rules.push(b1.rules[i])
+					}
+					for (let i=rulesDiv; i<b2.rules.length; i++){
+						this.rules.push(b2.rules[i])
+					}
+				}else{
+					for (let i=0; i<rulesDiv; i++){
+						this.rules.push(b2.rules[i])
+					}
+					for (let i=rulesDiv; i<b1.rules.length; i++){
+						this.rules.push(b1.rules[i])
+					}				
+				}
+			}else{
+				this.rules=b1.rules.slice();
+				let rid = this.randomNumberFromToIncl(1,100)
+				this.rules[rid]=this.randomNumberFromToIncl(1,3);
+			}
+		}else{
+			for (let i=0; i<=100; i++){
+				this.rules.push(this.randomNumberFromToIncl(1,3))
+			}
+		}
+	}
+	
+	makeMoveForSituation(gameDataOb){
+		return {n:this.rules[gameDataOb.N]};
 	}	
 }
