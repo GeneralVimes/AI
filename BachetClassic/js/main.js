@@ -13,6 +13,7 @@ window.onload=function(){
 	//створити нових еволюційних ботів на основі тих, що пройшли відбір
 	// window.world.createDescendantsOfBotsOfClass(EvoBot,"B")
 	//тепер треба повторити турнір
+	//window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
 	//та подивитися, чи нові еволюційні боти дадуть кращий результат
 /*
 	let obs={}
