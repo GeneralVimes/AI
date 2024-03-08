@@ -139,21 +139,16 @@ class BachetLearnerBot extends Bot{
 			//інформація про зроблений хід має вигляд об'єкту 
 			//{N:57, n:3}
 			let memOb = BachetLearnerBot.memory[moveOb.N]
-			if(memOb[moveOb.n]>1000){
-				memOb[moveOb.n]=Math.floor(memOb[moveOb.n]/2)
-			}else{
-				memOb[moveOb.n]-=1;
-				if (memOb[moveOb.n]==0){
-					let s=memOb[1]+memOb[2]+memOb[3];
-					if (s<100){
-						memOb[1]+=1;
-						memOb[2]+=1;
-						memOb[3]+=1;
-					}
-					
-				}			
+			memOb[moveOb.n]-=1;
+			if (memOb[moveOb.n]==0){
+				let s=memOb[1]+memOb[2]+memOb[3];
+				if (s<10){
+					memOb[1]+=1;
+					memOb[2]+=1;
+					memOb[3]+=1;
+				}
+				
 			}
-
 		}		
 	}	
 }
