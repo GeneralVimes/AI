@@ -128,6 +128,11 @@ class BachetLearnerBot extends Bot{
 			//{N:57, n:3}
 			let memOb = BachetLearnerBot.memory[moveOb.N]
 			memOb[moveOb.n]+=1;
+			if (memOb[moveOb.n]>=1000){
+				memOb[1]=Math.floor(memOb[1]/2)
+				memOb[2]=Math.floor(memOb[2]/2)
+				memOb[3]=Math.floor(memOb[3]/2)		
+			}
 		}
 	}
 
