@@ -251,7 +251,7 @@ class World {
 
 	createDescendantsOfBotsOfClass(botClass, nameStart="A"){
 		let len = this.allBots.length
-		for (let i=0; i<len-1; i++){
+		for (let i=0; i<len; i++){
 			let b1 = this.allBots[i];
 			if (b1 instanceof botClass){
 				let b = new botClass(nameStart+"_"+i, b1)
