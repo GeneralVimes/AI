@@ -4,6 +4,7 @@ class World {
 		this.allBots=[]//боти для великого турніру. Звідси будуть бартися боти по двоє і запускатися серія ігор
 		this.allBotsResults=[];//бали ботів у великому турнірі, у такому ж порядку, як і їхні номери у списку this.allBots
 		this.tournamentScores={}//асоційований об'єкт: бали ботів у турнірі по їх іменах
+		this.tournamentScoresByBots={}//асоційований об'єкт: бали ботів у турнірі по їх посиланнях
 	}
 	//службова функція - вибір m чисел з масиву unselected до масиву selected
 	recursivelySelect(res, m, selected, unselected){
@@ -39,6 +40,7 @@ class World {
 		this.allBots = bots;
 		this.allBotsResults=[];
 		this.tournamentScores={}
+		this.tournamentScoresByBots=new Map();
 		for (let i=0; i<this.allBots.length; i++){
 			this.allBotsResults.push(0);
 		}
@@ -68,6 +70,7 @@ class World {
 			this.bots.push(b)
 		}
 		this.tournamentScores={}
+		this.tournamentScoresByBots.clear()
 
 		for (let i=0; i<numGames; i++){
 			this.startGame(showLog)
@@ -167,6 +170,11 @@ class World {
 				}else{
 					this.tournamentScores[bot.myName]=1
 				}
+				if (this.tournamentScoresByBots.has(bot)){
+					this.tournamentScoresByBots.set(bot,this.tournamentScoresByBots.get(bot)+1)
+				}else{
+					this.tournamentScoresByBots.set(bot,1)
+				}
 
 				let bid = this.allBots.indexOf(bot)
 				if (bid!=-1){
@@ -188,6 +196,11 @@ class World {
 					this.tournamentScores[bot.myName]++
 				}else{
 					this.tournamentScores[bot.myName]=1
+				}	
+				if (this.tournamentScoresByBots.has(bot)){
+					this.tournamentScoresByBots.set(bot,this.tournamentScoresByBots.get(bot)+1)
+				}else{
+					this.tournamentScoresByBots.set(bot,1)
 				}	
 				
 				let bid = this.allBots.indexOf(bot)
@@ -212,7 +225,7 @@ class World {
 		for (let i=0; i<this.allBots.length; i++){
 			let bot = this.allBots[i];
 			if (bot instanceof botClass){
-				let score = this.allBotsResults[i];
+				let score = this.findLastTournamentScoreOfBot(bot)
 				let needsSorting=false;
 				if (bots2Keep.length<K){
 					bots2Keep.push(bot)
@@ -264,6 +277,53 @@ class World {
 					}
 				}
 			}
+		}
+	}
+
+
+	findLastTournamentScoreOfBot(bot){
+		if (this.tournamentScoresByBots.has(bot)){
+			return this.tournamentScoresByBots.get(bot)
+		}else{
+			return 0;
+		}
+	}
+
+	createKNewBotsOfClass(botClass,K,  nameStart="A"){
+		let len = this.allBots.length
+		for (let i=0; i<K; i++){
+			let b = new botClass(nameStart+"_"+(len+i))
+			this.allBots.push(b)
+		}
+	}
+
+	findBestTournamentResultOfBotsOfClass(botClass){
+		let res=0;
+		let len = this.allBots.length
+		for (let i=0; i<len; i++){
+			let b = this.allBots[i];
+			if (b instanceof botClass){
+				res = Math.max(res, this.findLastTournamentScoreOfBot(b))
+			}
+		}
+		return res;
+	}
+
+	findAverageTournamentResultOfBotsOfClass(botClass){
+		let sum=0;
+		let num=0
+		let len = this.allBots.length
+		for (let i=0; i<len; i++){
+			let b = this.allBots[i];
+			if (b instanceof botClass){
+				sum += this.findLastTournamentScoreOfBot(b)
+				num+=1
+			}
+		}
+		if (num==0){
+			return 0
+		}else{
+			return sum/num
 		}
 	}
 }
