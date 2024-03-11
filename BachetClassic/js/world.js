@@ -88,7 +88,7 @@ class World {
 
 		//доки гра не закінчена, робимо ходи
 		let currentBotId = 0;
-		while(!this.isGameOver()){//ходи продовжуємо, поки гра триває
+		while(true){//ходи продовжуємо, поки гра триває
 			//будуємо ситуація для показу боту
 			let ob = this.buildCurrentGameSituation()
 			if (showLog)console.log("Situation ",ob)
@@ -104,8 +104,10 @@ class World {
 				this.makeBotMove(botMove);
 				//якщо хід привів до завершення гри
 				if (this.isGameOver()){
+					if (showLog)console.log("GAME OVER! Calculating points...")
 					//визначаємо, хто виграв, хто програв
 					this.calculateGamePoints(currentBotId)
+					break;
 				}else{
 					//якщо ні, визначаємо наступного гравця, який буде ходити
 					currentBotId++;
@@ -113,6 +115,7 @@ class World {
 				}
 			}else{
 				//якщо хід не задовольняє правилам, то зупиняємо гру, зарахувавши боту програш
+				if (showLog)console.log("BOT ERROR! Calculating points...")
 				this.stopGameAfterBotError(currentBotId);
 				break;
 			}
@@ -438,5 +441,49 @@ class UniversalBachetWorld extends BachetWorld{
 		}else{
 			this.giveDefeatToSingleBot(currentBotId)
 		}
+	}
+}
+
+class UniversalBachetWorldWithNoRepeats extends UniversalBachetWorld{
+	constructor(movesAr=[1,2,3], isLastMoveWinner=true, nunNonRepeats=1){
+		super(movesAr,isLastMoveWinner)
+		this.numForbiddenRepeats=nunNonRepeats;
+		this.forbiddenMoves=[];
+	}
+	validateMove(moveOb){
+		let res = super.validateMove(moveOb)
+		if (res){
+			if (this.forbiddenMoves.indexOf(moveOb["n"])!=-1){
+				res=false;
+			}		
+		}
+		return res;
+	}
+	initNewGamePosition(){
+		super.initNewGamePosition();
+		this.forbiddenMoves.length=0;
+	}
+	//{n:1..3}
+	makeBotMove(moveOb){
+		this.N-=moveOb.n
+		this.forbiddenMoves.push(moveOb.n);
+		if (this.forbiddenMoves.length>this.numForbiddenRepeats){
+			this.forbiddenMoves.splice(0,1)
+		}
+	}
+	buildCurrentGameSituation(){
+		return {N:this.N, forbiddenMoves:this.forbiddenMoves.slice()}
+	}		
+	isGameOver(){	
+		let minPossibleMove=NaN;
+		for (let i=0; i<this.allowedMoves.length; i++){
+			let val = this.allowedMoves[i];
+			if (this.forbiddenMoves.indexOf(val)==-1){
+				if ((isNaN(minPossibleMove))||(val<minPossibleMove)){
+					minPossibleMove=val;
+				}
+			}
+		}
+		return (minPossibleMove>this.N)||(this.N<=0);
 	}
 }

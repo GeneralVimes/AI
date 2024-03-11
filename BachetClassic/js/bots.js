@@ -305,3 +305,146 @@ class EvoBot2 extends Bot{
 		return {n:this.rules[gameDataOb.N]};
 	}	
 }
+
+//бот для світу без потовріх ходів. Завжди робить мінімальний дозволений правилами хід
+class BotNoRepeatsMinimal123 extends Bot{
+	//об'єкт gameDataOb, який він отримує від світу, мість 2 поля:
+	//N - поточну кількість камінців та forbiddenMoves - масив заборонених на даний момент  ходів
+	makeMoveForSituation(gameDataOb){
+		let allMoves=[1,2,3]
+		let move = allMoves[0]
+		for (let i=0; i<allMoves.length; i++){
+			move = allMoves[i];
+			if (gameDataOb.forbiddenMoves.indexOf(move)==-1){
+				break;
+			}
+		}
+		return {n:move}
+	}
+}
+
+//бот для світу без потовріх ходів. Завжди робить максимальний дозволений правилами хід
+class BotNoRepeatsMaximall123 extends Bot{
+	//об'єкт gameDataOb, який він отримує від світу, мість 2 поля:
+	//N - поточну кількість камінців та forbiddenMoves - масив заборонених на даний момент  ходів
+	makeMoveForSituation(gameDataOb){
+		let allMoves=[1,2,3]
+		let move = allMoves[allMoves.length-1]
+		for (let i=allMoves.length-1; i>=0; i--){
+			move = allMoves[i];
+			if (move<=gameDataOb.N){
+				if (gameDataOb.forbiddenMoves.indexOf(move)==-1){
+					break;
+				}			
+			}
+
+		}
+		return {n:move}
+	}
+}
+//бот для світу без потовріх ходів. Завжди робить випадковий дозволений правилами хід
+class BotNoRepeatsRandom123 extends Bot{
+	//об'єкт gameDataOb, який він отримує від світу, мість 2 поля:
+	//N - поточну кількість камінців та forbiddenMoves - масив заборонених на даний момент  ходів
+	makeMoveForSituation(gameDataOb){
+		let allMoves=[1,2,3]
+		let move = 1;
+		allMoves = allMoves.filter((value)=>gameDataOb.forbiddenMoves.indexOf(value)==-1);
+		if (allMoves.length>0){
+			move = allMoves[Math.floor(Math.random()*allMoves.length)]
+		}
+		return {n:move}
+	}
+}
+
+class BachetNoRepeatsLearnerBot extends Bot{
+	static memory={};//статичне поле, до якого мають доступ всі екземпляри класу
+	/*
+	 i-й елемент масиву memory показує, які будуть імовірності взяти деяку кількість камінців з купи у N=i штук
+	Ініціалузуватися цей масив буде об'єктами:
+	{1:3, 2:3, 3:3}
+	//тобто шанси взяти 1, 2 чи 3 будуть рівними
+	
+	*/
+
+
+	constructor(nm){
+		super(nm);
+		this.myMoves=[];
+	}
+
+	makeMoveForSituation(gameDataOb){
+		//gameDataOb.N - це скільки камінців у купі, з якої нам треба зробити хід
+		//якщо запитаної ситуації ще нема у пам'яті, то добудовуємо пам'ять
+		let posCode=""+gameDataOb.N+"|"+gameDataOb.forbiddenMoves.join("_")
+		if (!BachetNoRepeatsLearnerBot.memory[posCode]){
+			BachetNoRepeatsLearnerBot.memory[posCode] = {1:3, 2:3, 3:3}
+		}
+		
+
+		let memOb = BachetNoRepeatsLearnerBot.memory[posCode];
+		//дізнаємося, скільки у комірці лежить фішок з можливими ходами
+		let numMoves = memOb[1]+memOb[2]+memOb[3];
+		//обираємо випадкову фішку
+		let randId = Math.floor(Math.random()*numMoves)//
+		let madeMove = 3;
+		if (randId<memOb[1]){
+			madeMove = 1;
+		}else{
+			if (randId<memOb[1]+memOb[2]){
+				madeMove = 2;
+			}
+		}
+		//запам'ятовуємо, з якої позиції який хід ми зробили
+		this.myMoves.push({pos:posCode, n:madeMove})
+
+		return {n:madeMove}
+	}
+	//функції бота, що викликаються грою та дають змогу боту навчитися
+	getInformedOfGameStart(){
+		this.myMoves.length=0;
+	}
+
+	getInformedOfVictory(){
+		//якщо ми перемогли, ми маємо пройти по зроблених ходах
+		//та більшити імовірніть тих ходів, що привели нас до виграшу
+		for (let i=0; i<this.myMoves.length; i++){
+			let moveOb = this.myMoves[i];
+			//інформація про зроблений хід має вигляд об'єкту 
+			//{N:57, n:3}
+			let memOb = BachetNoRepeatsLearnerBot.memory[moveOb.pos]
+			memOb[moveOb.n]+=1;
+			if (memOb[moveOb.n]>=1000){
+				memOb[1]=Math.floor(memOb[1]/2)
+				memOb[2]=Math.floor(memOb[2]/2)
+				memOb[3]=Math.floor(memOb[3]/2)		
+			}
+		}
+	}
+
+	getInformedOfDefeat(){
+		//якщо ми програмли, ми маємо пройти по зроблених ходах
+		//та зменшити імовірніть тих ходів, що привели нас до програшу
+		for (let i=0; i<this.myMoves.length; i++){
+			let moveOb = this.myMoves[i];
+			//інформація про зроблений хід має вигляд об'єкту 
+			//{pos:15|2, n:3}//з позиції 15 камінців та забороненого ходу 2 було взято 3 камінці
+			let memOb = BachetNoRepeatsLearnerBot.memory[moveOb.pos]
+			if(memOb[moveOb.n]>1000){
+				memOb[moveOb.n]=Math.floor(memOb[moveOb.n]/2)
+			}else{
+				memOb[moveOb.n]-=1;
+				if (memOb[moveOb.n]==0){
+					let s=memOb[1]+memOb[2]+memOb[3];
+					if (s<100){
+						memOb[1]+=1;
+						memOb[2]+=1;
+						memOb[3]+=1;
+					}
+					
+				}			
+			}
+
+		}		
+	}	
+}
