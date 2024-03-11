@@ -47,3 +47,38 @@
 Чи пристосуються EvoBot'и до нових умов?
 
 Проведіть таку саму симуляцію, але з класом EvoBot2 замість EvoBot
+
+Пропозиція до самостійного дослідження
+Проведіть експеримент з навчання деякого з типів ботів (EvoBot, EvoBot2, BachetLearnerBot)
+Визначте, за який час проходить навчання.
+Потім замініть деякі з умов навчання. І знов визначте, за який час буде проходити навчання з новими параметрами.
+
+Наприклад, на лекції ми почали порівнювати 2 екосистеми для навчання генетичних ботів:
+10 EvoBot та 10 Bot123 (що реалізують ідеальну стратегію)
+10 EvoBot, 1 Bot123 та 9 BachetBotRandom (що роблять випадкові ходи)
+
+Цікаво порівняти, у якій з екосистем EvoBot навчиться швидше. 
+
+Придумайте ідею власного експерименту, проведіть його, а презентацію щодо результатів представте на одному з занять.
+
+Для автоматизації експерименту можна використати насттупний код у консолі:
+//сттворюються необхідні боти та продовжується моделювання, поки середній результат EvoBot'ів не складе 95% середнього результату Bot123
+window.world.allBots=[]
+window.world.createKNewBotsOfClass(Bot123,10,"BEST")
+window.world.createKNewBotsOfClass(EvoBot,10,"EVO")
+for (let i=0; i<1000; i++){
+    console.log("ROUND",i)
+    window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+    
+    let EvoRes = window.world.findAverageTournamentResultOfBotsOfClass(EvoBot);
+    let BestRes = window.world.findAverageTournamentResultOfBotsOfClass(Bot123);
+    if (BestRes>0){
+        console.log(EvoRes, BestRes, EvoRes/BestRes);
+        if (EvoRes/BestRes>0.95){
+            break;
+        }
+    }
+    
+    window.world.keepNoMoreThanKBestBotsOfClass(EvoBot,10)
+    window.world.createDescendantsOfBotsOfClass(EvoBot,"C"+i)
+}
