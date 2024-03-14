@@ -82,3 +82,44 @@ for (let i=0; i<1000; i++){
     window.world.keepNoMoreThanKBestBotsOfClass(EvoBot,10)
     window.world.createDescendantsOfBotsOfClass(EvoBot,"C"+i)
 }
+
+Приклад ідеї другого експерименту
+Клас EvoBot використосує 6 видів мутації. Відключіть якийсь з цих видів мутацій та порівняйте, як це вплине на швидкість навчання.
+
+Наприклад, давайте 
+Для цього створіть нового бота EvoBotMod
+Код в нього буде такий самий, як і в EvoBotMod за єдиним виключенням
+Так, де в конструкторі визначається імовірність мутації, поставимо 
+let mutationId = this.randomNumberFromToIncl(1,5);
+замість
+let mutationId = this.randomNumberFromToIncl(0,5);
+
+Таким чином, мутація за номером 0 не буде обиратися
+
+Тепер запустіть симуляцію наступним чином:
+window.world = new UniversalBachetWorld([1,2,3],true);
+window.world.createKNewBotsOfClass(Bot123,1,"BEST")
+window.world.createKNewBotsOfClass(EvoBot,10,"EVO")
+window.world.createKNewBotsOfClass(EvoBotMod,10,"MOD")
+window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+
+Тепер будемо фіксувати, як середній результат EvoBot та EvoBotMod змінюється з часом
+
+
+let scores=[]
+for (let i=0;  i<100; i++){
+    console.log("ROUND_"+i)
+    let evoRes = window.world.findAverageTournamentResultOfBotsOfClass(EvoBot);
+    let modRes = window.world.findAverageTournamentResultOfBotsOfClass(EvoBotMod);
+    let bestRes = window.world.findAverageTournamentResultOfBotsOfClass(Bot123);
+    scores.push([evoRes/bestRes,modRes/bestRes])
+window.world.keepNoMoreThanKBestBotsOfClass(EvoBot,10)
+    window.world.keepNoMoreThanKBestBotsOfClass(EvoBotMod,10)
+    window.world.createDescendantsOfBotsOfClass(EvoBot,"A"+i)
+    window.world.createDescendantsOfBotsOfClass(EvoBotMod,"B"+i)
+    window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+}
+console.log(scores)
+
+Отримані дані з масиву scores обробіть у Excel та виведіть як графік
+Для більш повної картини може знадобитися провести більше іж 100 раундів
