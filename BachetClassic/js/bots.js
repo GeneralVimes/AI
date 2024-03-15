@@ -411,7 +411,7 @@ class BachetNoRepeatsLearnerBot extends Bot{
 		for (let i=0; i<this.myMoves.length; i++){
 			let moveOb = this.myMoves[i];
 			//інформація про зроблений хід має вигляд об'єкту 
-			//{N:57, n:3}
+			//{pos:15|2, n:3}//з позиції 15 камінців та забороненого ходу 2 було взято 3 камінці
 			let memOb = BachetNoRepeatsLearnerBot.memory[moveOb.pos]
 			memOb[moveOb.n]+=1;
 			if (memOb[moveOb.n]>=1000){
