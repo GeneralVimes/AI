@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bots</title>
+    <link rel="stylesheet" href="assets/main.css">
+    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/bots.js"></script>
+	<script src="node_modules/chart.js/dist/chart.umd.js"></script>
+	<script src="js/control.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Match Settings</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="sel1">Select list:</label>
+                            <select class="form-control" id="sel1"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="botNameInput">Bot name:</label>
+                            <input type="text" class="form-control" id="botNameInput" placeholder="Enter bot name:">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="addBot()">Add</button>
+                        <div class="form-group">
+                            <label for="rounds">Count of rounds:</label>
+                            <input type="number" class="form-control" id="rounds" value="100">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="left-side">
+            </div>
+            <div class="right-side">
+                <div class="graphics-of-bots"></div>
+                <div class="control-buttons">
+                    <button type="button" class="btn btn-lg" data-toggle="modal" data-target="#myModal">Open Settings</button>
+                    <button type="button" class="btn" onclick="startTournament()">Start</button>
+                    <button type="button" class="btn" onclick="makeGraphic()">Make graphic</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
