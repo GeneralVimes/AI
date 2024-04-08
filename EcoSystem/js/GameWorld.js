@@ -3,7 +3,7 @@ class GameWorld{
 		this.grp = new Phaser.GameObjects.Container(window.main,0,0)
 		window.main.add.existing(this.grp)
 
-		this.isThorus=true
+		this.isThorus=false
 		this.isVisualizing = true
 		this.gameSpeed=1
 		this.numPlants = 10000
@@ -57,6 +57,7 @@ class GameWorld{
 
 		// let cl = new CellIm(100,100)
 		// window.main.add.existing(cl)
+		
 		this.gridSide=5
 		this.gridWidth=200
 		this.gridHeight=200
@@ -79,7 +80,7 @@ class GameWorld{
 		//moveDirs: 0-stay, 1-up, 2-right, 3-down,4-left
 		//moveModes: 0-normal, 1-attack(and try to eat), 2-defensive (stays active for all next move)
 		this.moveObFromCreature={moveDir:0, moveMode:0}
-
+		this.outBorderColor={r:255, g:0, b:0}
 		for (let i=0; i<this.gridWidth; i++){
 			let ar=[];
 			for (let j=0; j<this.gridHeight; j++){
@@ -335,8 +336,6 @@ class GameWorld{
 						cr.vis.y = this.gridSide*(0.5+cr.cell_y)				
 					}				
 				}
-
-			
 			}else{
 				cr.alterNeuroNetworkOutput()
 			}
@@ -360,6 +359,7 @@ class GameWorld{
 				//give birth to new creature
 				let id = this.getIdOfRandomFreeCellAround(cr.cell_x, cr.cell_y)
 				if (id!=-1){
+					//тут можна isThorus не враховувати, т.я. воно враховано всередині getIdOfRandomFreeCellAround
 					let cx1 = (cr.cell_x+this.dirViewDeltas[id].dx+this.gridWidth)%this.gridWidth
 					let cy1 = (cr.cell_y+this.dirViewDeltas[id].dy+this.gridHeight)%this.gridHeight
 
@@ -387,16 +387,35 @@ class GameWorld{
 		let id = Math.floor(Math.random()*len)
 		let id0=id;
 		while (true){
-			if (this.fieldCreatures[(cx+this.dirViewDeltas[id].dx+this.gridWidth)%this.gridWidth][(cy+this.dirViewDeltas[id].dy+this.gridHeight)%this.gridHeight]){
+			let dx=this.dirViewDeltas[id].dx
+			let dy=this.dirViewDeltas[id].dy
+			if (this.isThorus){
+				var cx2 = (cx+dx+this.gridWidth)%this.gridWidth;
+				var cy2 = (cy+dy+this.gridHeight)%this.gridHeight;			
+			}else{
+				cx2 = cx+dx
+				cy2 = cy+dy			
+			}
+			if ((cx2<0)||(cx2>=this.gridWidth)||(cy2<0)||(cy2>=this.gridHeight)){
 				id+=1
 				id%=len
 				if (id==id0){
 					break
-				}
+				}			
 			}else{
-				res=id;
-				break;
+				if (this.fieldCreatures[cx2][cy2]){
+					id+=1
+					id%=len
+					if (id==id0){
+						break
+					}
+				}else{
+					res=id;
+					break;
+				}			
 			}
+
+
 		}
 		return res;
 	}
@@ -404,9 +423,24 @@ class GameWorld{
 		let res=0
 		for (let i=0; i<this.dirViewDeltas.length; i++){
 			let deltas = this.dirViewDeltas[i]
-			if (!this.fieldCreatures[(cx+deltas.dx+this.gridWidth)%this.gridWidth][(cy+deltas.dy+this.gridHeight)%this.gridHeight]){
-				res+=1
+
+			if (this.isThorus){
+				var cx2 = (cx+deltas.dx+this.gridWidth)%this.gridWidth;
+				var cy2 = (cy+deltas.dy+this.gridHeight)%this.gridHeight;			
+			}else{
+				cx2 = cx+deltas.dx
+				cy2 = cy+deltas.dy			
 			}
+			if ((cx2<0)||(cx2>=this.gridWidth)||(cy2<0)||(cy2>=this.gridHeight)){
+			
+			}else{
+				if (!this.fieldCreatures[cx2][cy2]){
+					res+=1
+				}			
+			}
+
+
+
 		}
 		return res;
 	}
@@ -424,13 +458,23 @@ class GameWorld{
 	//які кольори бачитиме істота навколо клітини cx, cy
 	updateInfoObject2SeeAround(cx, cy){
 		for (let i=0; i<this.dirViewDeltas.length; i++){
-			var cx1 = (cx+this.dirViewDeltas[i].dx+this.gridWidth)%this.gridWidth
-			var cy1 = (cy+this.dirViewDeltas[i].dy+this.gridHeight)%this.gridHeight
+			if (this.isThorus){
+				var cx1 = (cx+this.dirViewDeltas[i].dx+this.gridWidth)%this.gridWidth
+				var cy1 = (cy+this.dirViewDeltas[i].dy+this.gridHeight)%this.gridHeight		
+			}else{
+				cx1 = cx+this.dirViewDeltas[i].dx
+				cy1 = cy+this.dirViewDeltas[i].dy	
+			}
+			if ((cx1<0)||(cx1>=this.gridWidth)||(cy1<0)||(cy1>=this.gridHeight)){
+				var cl = this.outBorderColor;
+				var cr = null
+			}else{
+				//якого кольору клітина, на яку дивимося
+				cl = this.fieldColors[cx1][cy1];
+				//чи є у ці клітині якась істота
+				cr = this.fieldCreatures[cx1][cy1];				
+			}	
 
-			//якого кольору клітина, на яку дивимося
-			var cl = this.fieldColors[cx1][cy1];
-			//чи є у ці клітині якась істота
-			var cr = this.fieldCreatures[cx1][cy1];
 			if (cr){
 				let perc = 0.8//який відсоток клітини замає істота
 				this.infoOb2Creature.surroundingColors[i].r = cl.r*(1-perc)+cr.colorOb.r*perc
@@ -441,6 +485,7 @@ class GameWorld{
 				this.infoOb2Creature.surroundingColors[i].g = cl.g
 				this.infoOb2Creature.surroundingColors[i].b = cl.b			
 			}
+			
 		}
 	}
 
@@ -483,7 +528,7 @@ class GameWorld{
 		cx = Math.floor(cx/this.gridSide)
 		cy = Math.floor(cy/this.gridSide)
 
-		if ((cx>=0)&&(cx<this.gridWidth)&&(cy>=0)&&(cy<this.gridWidth)){
+		if ((cx>=0)&&(cx<this.gridWidth)&&(cy>=0)&&(cy<this.gridHeight)){
 			console.log(this.fieldCreatures[cx][cy])
 		}
 	}
