@@ -133,7 +133,19 @@ class Creature {
 			}
 		}
 	}
-
+	export2Ob(){
+		res={}
+		res.cell_x=this.cell_x
+		res.cell_y=this.cell_y
+		res.isInDefenceMode = this.isInDefenceMode
+		res.plantEnergyPercent=this.plantEnergyPercent
+		res.hp=this.hp
+		res.energy=this.energy
+		res.lastMoveDir = this.lastMoveDir
+		res.lastMoveMode=this.lastMoveMode
+		res.dna = this.exportDNA()
+		return res	
+	}
 	decideNextActionFromInfo(infoOb, decisionOb){
 		if (!this.canMove && !this.canDefend){
 			decisionOb.moveDir=0
