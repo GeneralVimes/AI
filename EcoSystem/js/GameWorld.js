@@ -120,7 +120,7 @@ class GameWorld{
 			let cx = Math.floor(Math.random()*this.gridWidth);
 			let cy = Math.floor(Math.random()*this.gridHeight);
 			if (!this.fieldCreatures[cx][cy]){
-				this.createCreature(cx,cy,this.plantDNA)
+				this.createCreature(cx,cy,this.plantDNA,0)
 			}
 		}
 
@@ -128,7 +128,7 @@ class GameWorld{
 			let cx = Math.floor(Math.random()*this.gridWidth);
 			let cy = Math.floor(Math.random()*this.gridHeight);
 			if (!this.fieldCreatures[cx][cy]){
-				this.createCreature(cx,cy,this.herbivoreDNA)
+				this.createCreature(cx,cy,this.herbivoreDNA,0)
 			}
 		}
 
@@ -136,7 +136,7 @@ class GameWorld{
 			let cx = Math.floor(Math.random()*this.gridWidth);
 			let cy = Math.floor(Math.random()*this.gridHeight);
 			if (!this.fieldCreatures[cx][cy]){
-				this.createCreature(cx,cy,this.predatorDNA)
+				this.createCreature(cx,cy,this.predatorDNA,0)
 			}
 		}
 
@@ -154,8 +154,8 @@ class GameWorld{
 		}
 	}
 
-	createCreature(cx, cy, dna){
-		let cr = new Creature(this,cx, cy,dna)
+	createCreature(cx, cy, dna,mutProb=0.1){
+		let cr = new Creature(this,cx, cy,dna,mutProb)
 		if (this.isVisualizing){
 			if (cr.vis){
 				this.grp.add(cr.vis)
@@ -433,9 +433,9 @@ class GameWorld{
 			var cr = this.fieldCreatures[cx1][cy1];
 			if (cr){
 				let perc = 0.8//який відсоток клітини замає істота
-				this.infoOb2Creature.surroundingColors[i].r = cl.r*perc+cr.colorOb.r*(1-perc)
-				this.infoOb2Creature.surroundingColors[i].g = cl.g*perc+cr.colorOb.g*(1-perc)
-				this.infoOb2Creature.surroundingColors[i].b = cl.b*perc+cr.colorOb.b*(1-perc)
+				this.infoOb2Creature.surroundingColors[i].r = cl.r*(1-perc)+cr.colorOb.r*perc
+				this.infoOb2Creature.surroundingColors[i].g = cl.g*(1-perc)+cr.colorOb.g*perc
+				this.infoOb2Creature.surroundingColors[i].b = cl.b*(1-perc)+cr.colorOb.b*perc
 			}else{
 				this.infoOb2Creature.surroundingColors[i].r = cl.r
 				this.infoOb2Creature.surroundingColors[i].g = cl.g

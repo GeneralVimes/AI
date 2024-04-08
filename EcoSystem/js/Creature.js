@@ -1,5 +1,5 @@
 class Creature {
-	constructor(wrld, cx, cy, dnaOb){
+	constructor(wrld, cx, cy, dnaOb, mutProb=0.1){
 		
 		this.myWorld = wrld;
 		this.cell_x = cx;
@@ -40,7 +40,7 @@ class Creature {
 		// dnaOb.color
 		// dnaOb.abilities
 		// dnaOb.network
-		this.mutateDNAOb(dnaOb)
+		this.mutateDNAOb(dnaOb, mutProb)
 
 		
 		this.attackVal=dnaOb.attack
@@ -112,8 +112,8 @@ class Creature {
 		}
 	}
 
-	mutateDNAOb(dnaOb){
-		if (Math.random()<0.1){
+	mutateDNAOb(dnaOb, mutProb=0.1){
+		if (Math.random()<mutProb){
 			let clCode=["r", "g", "b"][Math.floor(Math.random()*3)]
 			dnaOb.color[clCode] = Math.floor(dnaOb.color[clCode]+10-Math.random()*20)
 			dnaOb.color[clCode] = Math.max(0,Math.min(255,dnaOb.color[clCode]))
