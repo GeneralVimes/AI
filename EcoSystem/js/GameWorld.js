@@ -247,6 +247,7 @@ class GameWorld{
 
 				hpDelta=dhp
 				energySpend+=0.005*hpDelta
+				cr.hp+=hpDelta
 			}
 		}
 
