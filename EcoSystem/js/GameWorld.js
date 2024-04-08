@@ -476,8 +476,16 @@ class GameWorld{
 
 	}
 	handleDown(pointer, objectsClicked){
-		// console.log("pointerdown", pointer, objectsClicked)
+		console.log("pointerdown", pointer, objectsClicked)
+		let cx = (pointer.downX-this.grp.x)/this.grp.scaleX
+		let cy = (pointer.downY-this.grp.y)/this.grp.scaleY
 
+		cx = Math.floor(cx/this.gridSide)
+		cy = Math.floor(cy/this.gridSide)
+
+		if ((cx>=0)&&(cx<this.gridWidth)&&(cy>=0)&&(cy<this.gridWidth)){
+			console.log(this.fieldCreatures[cx][cy])
+		}
 	}
 
 	handleKeyDown(evt){

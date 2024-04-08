@@ -152,10 +152,10 @@ class Creature {
 			decisionOb.moveMode=0
 			return
 		}
-		for (let i=0; i<infoOb.length; i++){
-			this.inAr[3*i] = infoOb[i].r
-			this.inAr[3*i+1] = infoOb[i].g
-			this.inAr[3*i+2] = infoOb[i].b
+		for (let i=0; i<infoOb.surroundingColors.length; i++){
+			this.inAr[3*i] = infoOb.surroundingColors[i].r
+			this.inAr[3*i+1] = infoOb.surroundingColors[i].g
+			this.inAr[3*i+2] = infoOb.surroundingColors[i].b
 		}
 		this.inAr[this.inAr.length-3] = Math.random()*100
 		this.inAr[this.inAr.length-2] = this.hp/this.hpMax*100
