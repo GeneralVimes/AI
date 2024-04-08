@@ -179,9 +179,9 @@ class Creature {
 		let corAr = this.neuronet.getOutputs()
 		for (let i=0; i<corAr.length; i++){
 			if ((i==dirNeuronId)||(i==modeNeuronId)){
-				corAr[i]/=coef
+				corAr[i]=0//Math.min(1,Math.max(0,corAr[i]/coef))
 			}else{
-				corAr[i]*=coef*(1+Math.random())
+				corAr[i]=Math.min(1,Math.max(0,corAr[i]*coef))
 			}
 		}
 		this.neuronet.calculateErrors(corAr)
@@ -193,12 +193,12 @@ class Creature {
 		let corAr = this.neuronet.getOutputs()
 		for (let i=0; i<corAr.length; i++){
 			if ((i==dirNeuronId)||(i==modeNeuronId)){
-				corAr[i]*=(coef*(1+Math.random()))
+				corAr[i]=1//Math.min(1,Math.max(0,corAr[i]*coef))
 			}else{
-				corAr[i]/=coef
+				corAr[i]=Math.min(1,Math.max(0,corAr[i]/coef))
 			}
 		}
 		this.neuronet.calculateErrors(corAr)
-		this.neuronet.adjustParams(0.5)		
+		this.neuronet.adjustParams(0.1)		
 	}
 }
