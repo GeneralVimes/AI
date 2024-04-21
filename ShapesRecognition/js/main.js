@@ -3,7 +3,7 @@ window.onload=function(){
 	console.log("Hello")
 	let canvas = document.getElementById("myCanvas");
 	window.ctx = canvas.getContext("2d", {willReadFrequently:true});
-	
+	window.isPointerDownNow = false
 	canvas.addEventListener("pointerdown", onCanvasPointerDown)
 	canvas.addEventListener("pointermove", onCanvasPointerMove)
 	canvas.addEventListener("pointerup", onCanvasPointerUp)
@@ -11,8 +11,8 @@ window.onload=function(){
 	window.network = new NeuroNet()
 	window.network.createIntroLayer(28*28);
 
-	window.network.createLayer(300,"leakyrelu");
-	window.network.createLayer(2,"softmax");
+	window.network.createLayer(300,"sigmoid");
+	window.network.createLayer(2,"sigmoid");
 
 	for (let k=0; k<1000; k++){
 		let pictureTypeId=Math.floor(Math.random()*2)
@@ -31,7 +31,14 @@ window.onload=function(){
 		}
 
 		let neuronInputs = getNeuroInputsFromCanvas()
-		trainNetworkWithData(neuronInputs,pictureTypeId)
+
+		window.network.calculateOutsForInputs(neuronInputs);
+		let corAr=[0,0]
+		corAr[pictureTypeId]=1;
+		window.network.calculateErrors(corAr)
+		window.network.adjustParams(0.01)
+
+		
 		if (window.network.findIdOfMostActivatedOutNeuron()==pictureTypeId){
 			numCorrects++
 		}
@@ -58,36 +65,23 @@ function drawVerticalLine(){
 	window.ctx.fillStyle="#000000"
 	window.ctx.fillRect(0,0,28,28)
 
-	//напишіть функцію для малювання випадкової вертикальної лінії
-	//довжина лінії - від 14 до 28
-	//має бути розташована у випадковому місці квадрату 28х28
-	//нахил лінії - до 25% вліво чи вправо
-	//твощина лінії від 1 до 5 пікселів
+
 }
 
 function drawHorizontalLine(){
 	window.ctx.fillStyle="#000000"
 	window.ctx.fillRect(0,0,28,28)
-	//напишіть функцію для малювання випадкової горизонтальної лінії
-	//довжина лінії - від 14 до 28
-	//має бути розташована у випадковому місці квадрату 28х28
-	//нахил лінії - до 25% вліво чи вправо
-	//товщина лінії від 1 до 5 пікселів	
-}
-//ви зможете малювати форми та перевірити, як мережа їх визначає
-//малювання здійснюється із зажатою клавішею Alt, стирання Alt+Click
 
-//Коли зробите розпізнавання ліній, додайте 2 функції: малювання випадковго квадрата (зі стороною від 14 до 28 пікселів)
-//та малювання випадкового кола: (з радіусом від 14 до 28 пікселів)
+
+}
+
+//Коли зробите розпізнавання ліній, додайте розпізнавання діагональних ліній, нахилених право та вліво
+//(що займають дорівнюють від половини до повної діагоналі всього поля
 //та зробіть нейромережу, яка б розрізняла всі 4 форми
-
-function trainNetworkWithData(ar, cor_res){
-	window.network.calculateOutsForInputs(ar);
-	let corAr=[0,0,0,0,0,0,0,0,0,0]
-	corAr[cor_res]=1;
-	window.network.calculateErrors(corAr)
-	window.network.adjustParams(0.01)
-}
+//Коли зробите розпізнавання ліній, додайте ще 2 функції: малювання випадковго квадрата (зі стороною від 14 до 28 пікселів)
+//та малювання випадкового кола: (з радіусом від 14 до 28 пікселів)
+//та зробіть нейромережу, яка б розрізняла всі 6 форм
+//придумайте ще форми, які можна малювати та навчити мережу відрізняти
 
 function getNeuroInputsFromCanvas(){
 	let imageData = window.ctx.getImageData(0, 0, 28, 28);
@@ -99,28 +93,8 @@ function checkNeuronNetRecognition(){
 }
 
 
-var image = new Image();
-var image2 = new Image();
-// var training_files_nums=[5923, 6742, 5958, 6131,5842,5421,5918,6265,5851,5949]//скільки яких картинок
-var training_files_nums=[980, 1135, 1032, 1010,982,892,958,1028,974,1009]//скільки яких картинок
-
-
-var trainingRound=0;
-var maxRounds=1000000;
 var reportingStep=100;
 var numCorrects=0
-
-var current_digit=0
-var current_image_id=0
-function loadNextImage(){
-	current_digit = Math.floor(Math.random()*10);
-	current_image_id = Math.floor(Math.random()*training_files_nums[current_digit]);
-
-	// let str="mnist/training/"+current_digit+"/"+"train_"+current_digit+"_"+(current_image_id+1)+".png"
-	let str="mnist/testing/"+current_digit+"/"+"test_"+current_digit+"_"+(current_image_id+1)+".png"
-	image.src = str;
-	trainingRound++;
-}
 
 function loadImage2Array(imageData){
 	let res=[];
@@ -136,6 +110,7 @@ function recognizeImageFromCanvas(){
 }
 
 function onCanvasPointerDown(evt){
+	window.isPointerDownNow = true
 	// console.log("onCanvasPointerDown",evt)
 	if (evt.altKey){
 		window.ctx.fillStyle="#000000"
@@ -145,12 +120,22 @@ function onCanvasPointerDown(evt){
 
 function onCanvasPointerMove(evt){
 	// console.log("onCanvasPointerMove",evt)
-	if (evt.altKey){
-		window.ctx.fillStyle="#ffffff"
-		window.ctx.fillRect(evt.offsetX,evt.offsetY,1,1)
+	if (window.isPointerDownNow){
+		if (evt.shiftKey){
+			window.ctx.fillStyle="#000000"
+		}else{
+			window.ctx.fillStyle="#ffffff"
+		}
+		
+		let w = 1;
+		if (evt.ctrlKey){
+			w=2
+		}
+		window.ctx.fillRect(evt.offsetX-w*0.5,evt.offsetY-w*0.5,w,w)
 	}
 }
 
 function onCanvasPointerUp(evt){
 	// console.log("onCanvasPointerUp",evt)
+	window.isPointerDownNow = false
 }

@@ -22,6 +22,12 @@ class Neuron{
 			this.dcdw.push(0);
 		}
 
+		
+		this.setActivationFunctionType(fnType)
+		
+	}
+
+	setActivationFunctionType(fnType){
 		this.activationFunctionType=fnType
 		this.activationFunction = this.sigmoidActivationFunction
 		this.activationFunctionPrime = this.sigmoidActivationFunctionPrime
@@ -46,7 +52,7 @@ class Neuron{
 				this.activationFunctionPrime = this.softMaxActivationFunctionPrime			
 				break;
 			}
-		}
+		}	
 	}
 
 	calculateErrors(targetVal, prevLayer, nextLayer){
@@ -97,27 +103,50 @@ class Neuron{
 		return val>0?1:0.01
 	}
 
+	//проблема: Math.exp(710)=Infinity
+	//поэтому softmax надо перед использованием подстроить
 	softMaxActivationFunction(val){
+		let maxZ = 0;
+		let coef=1;
 		let s = 0;
 		let lyr = this.myNetwork.layers[this.myLayerId]
 		for (let i=0; i<lyr.length; i++){
-			if (i!=this.idInLayer){
-				s+=Math.exp(lyr[i].calculatedZ)
+			if (lyr[i].calculatedZ>maxZ){
+				maxZ = lyr[i].calculatedZ
 			}
-			
 		}
-		return Math.exp(val)/(s+Math.exp(val));
+		if (maxZ>500){
+			coef = 500/maxZ;
+		}
+		
+		for (let i=0; i<lyr.length; i++){
+			if (i!=this.idInLayer){
+				s+=Math.exp(lyr[i].calculatedZ*coef)
+			}
+		}
+		return Math.exp(val*coef)/(s+Math.exp(val*coef));
 	}
 
 	softMaxActivationFunctionPrime(val){
+		let maxZ = 0;
+		let coef=1;
 		let s = 0;
 		let lyr = this.myNetwork.layers[this.myLayerId]
 		for (let i=0; i<lyr.length; i++){
-			if (i!=this.idInLayer){
-				s+=Math.exp(lyr[i].calculatedZ)
+			if (lyr[i].calculatedZ>maxZ){
+				maxZ = lyr[i].calculatedZ
 			}
 		}
-		let ex = Math.exp(val)
+		if (maxZ>500){
+			coef = 500/maxZ;
+		}
+
+		for (let i=0; i<lyr.length; i++){
+			if (i!=this.idInLayer){
+				s+=Math.exp(lyr[i].calculatedZ*coef)
+			}
+		}
+		let ex = Math.exp(val*coef)
 		return ex*s/((ex+s)**2)
 	}
 
@@ -137,6 +166,23 @@ class Neuron{
 	applyActiovationFunctionOnly(){
 		this.calculatedOutput = this.activationFunction(this.calculatedZ)
 	}
+
+	export2Object(){
+		return{
+			bias:this.bias,
+			function:this.activationFunctionType,
+			weights:this.entryWeights.slice()
+		}
+	}
+
+	initFromObject(ob){
+		this.bias = ob.bias;
+		let m = Math.min(this.entryWeights.length, ob.weights)
+		for (let i=0; i<m; i++){
+			this.entryWeights[i] = ob.weights[i]
+		}
+		this.setActivationFunctionType(ob.function)
+	}	
 }
 
 class  NeuroNet{
@@ -150,7 +196,7 @@ class  NeuroNet{
 			this.introLayer[i]=new Neuron(this,-1,i,0);
 		}
 	}
-	createLayer(n){
+	createLayer(n, fnType="sigmoid"){
 		this.layers.push([]);
 		let leayerId = this.layers.length-1
 		let ar = this.layers[leayerId];
@@ -160,7 +206,7 @@ class  NeuroNet{
 		}
 
 		for (let i=0; i<n; i++){
-			let nrn = new Neuron(this, leayerId, i, lastNumOuts)
+			let nrn = new Neuron(this, leayerId, i, lastNumOuts, fnType)
 			ar.push(nrn);
 		}
 	}
@@ -316,6 +362,32 @@ class  NeuroNet{
 		return res;
 		// return resLines;
 	}
+	export2Object(){
+		let res={}
+
+		res.numInputs=this.introLayer.length;
+		res.layers=[]
+
+		for (let i=0; i<this.layers.length; i++){
+			let ar=[]
+			for (let j=0; j<this.layers[i].length; j++){
+				ar.push(this.layers[i][j].export2Object())
+			}
+			res.layers.push(ar)
+		}
+
+		return res;
+	}
+
+	buildFromObject(ob){
+		this.createIntroLayer(ob.numInputs)
+		for (let i=0; i<ob.layers.length;i++){
+			this.createLayer(ob.layers[i].length)
+			for (let j=0; j<ob.layers[i].length; j++){
+				this.layers[i][j].initFromObject(ob.layers[i][j])
+			}
+		}
+	}	
 }
 
 function convertNtoBits(N, len=7){
