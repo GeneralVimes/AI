@@ -41,8 +41,8 @@ window.onload=function(){
 window.network = new NeuroNet()
 window.network.createIntroLayer(28*28);
 // window.network.createLayer(30);
-window.network.createLayer(1000,"leakyrelu");
-window.network.createLayer(10,"softmax");
+window.network.createLayer(1000);
+window.network.createLayer(10);
 
 function trainNetworkWithData(ar, cor_res){
 	window.network.calculateOutsForInputs(ar);
