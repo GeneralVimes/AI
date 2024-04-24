@@ -5,8 +5,8 @@ window.onload=function(){
 	//та 4 виходи (маэ активуватися нейрон, що выдповідатиме номеру чверті)
 	window.network = new NeuroNet()
 	window.network.createIntroLayer(2)
-	window.network.createLayer(10);
-	window.network.createLayer(4);
+	window.network.createLayer(10,"relu");
+	window.network.createLayer(4,"softmax");
 
 	//тепер сформулюємо начальну вибірку. Це будуть пари координат та число - правильний номер чверті
 	//оскільки таку задачу можна вирішити суто математично, напишемо таку функцію для контролю
@@ -28,7 +28,7 @@ window.onload=function(){
 
 	//будуємо навчальну вибірку
 	let learningData=[];
-	for (let i=0; i<10000; i++){
+	for (let i=0; i<100000; i++){
 		let x = Math.random()*2-1
 		let y = Math.random()*2-1
 		learningData.push([x,y,findQuarterNumber(x,y)-1])

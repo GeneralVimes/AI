@@ -72,6 +72,33 @@ class Neuron{
 		}
 	}
 
+	calculateDCDAOlnly(targetVal, prevLayer, nextLayer){
+		if (!nextLayer){
+			this.dcda = this.calculatedOutput-targetVal;
+		}else{
+			this.dcda = 0;
+			for (let i=0; i<nextLayer.length; i++){
+				this.dcda+=nextLayer[i].entryWeights[this.idInLayer]*nextLayer[i].dcdz;
+			}
+		}
+	}
+
+	calculateSoftMaxErrors(targetVal, prevLayer, nextLayer){
+		this.dcdz = 0;
+		let myLayer = this.myNetwork.layers[this.myLayerId];
+		for (let i=0; i<myLayer.length; i++){
+			if (i==this.idInLayer){
+				this.dcdz+=this.dcda*this.activationFunctionPrime(this.calculatedZ)
+			}else{
+				this.dcdz+=myLayer[i].dcda*this.softMaxActivationFunctionPrimeById(i, this.calculatedZ)
+			}
+		}
+		this.dcdb = 1*this.dcdz;
+		for (let i=0; i<this.dcdw.length; i++){
+			this.dcdw[i] = prevLayer[i].calculatedOutput*this.dcdz;
+		}
+	}
+
 	adjustParams(step=0.1){
 		for (let i=0; i<this.entryWeights.length; i++){
 			this.entryWeights[i]-=this.dcdw[i]*step;
@@ -115,21 +142,17 @@ class Neuron{
 				maxZ = lyr[i].calculatedZ
 			}
 		}
-		if (maxZ>500){
-			coef = 500/maxZ;
-		}
 		
 		for (let i=0; i<lyr.length; i++){
 			if (i!=this.idInLayer){
-				s+=Math.exp(lyr[i].calculatedZ*coef)
+				s+=Math.exp(lyr[i].calculatedZ-maxZ)
 			}
 		}
-		return Math.exp(val*coef)/(s+Math.exp(val*coef));
+		return Math.exp(val-maxZ)/(s+Math.exp(val-maxZ));
 	}
 
 	softMaxActivationFunctionPrime(val){
 		let maxZ = 0;
-		let coef=1;
 		let s = 0;
 		let lyr = this.myNetwork.layers[this.myLayerId]
 		for (let i=0; i<lyr.length; i++){
@@ -137,17 +160,35 @@ class Neuron{
 				maxZ = lyr[i].calculatedZ
 			}
 		}
-		if (maxZ>500){
-			coef = 500/maxZ;
-		}
 
 		for (let i=0; i<lyr.length; i++){
 			if (i!=this.idInLayer){
-				s+=Math.exp(lyr[i].calculatedZ*coef)
+				s+=Math.exp(lyr[i].calculatedZ-maxZ)
 			}
 		}
-		let ex = Math.exp(val*coef)
-		return ex*s/((ex+s)**2)
+		let ex = Math.exp(val-maxZ)
+		return ex*s/(ex+s)**2
+	}
+
+	softMaxActivationFunctionPrimeById(id, val){
+		let maxZ = 0;
+		let s = 0;
+		let lyr = this.myNetwork.layers[this.myLayerId]
+		for (let i=0; i<lyr.length; i++){
+			if (lyr[i].calculatedZ>maxZ){
+				maxZ = lyr[i].calculatedZ
+			}
+		}
+		
+		for (let i=0; i<lyr.length; i++){
+			if (i!=this.idInLayer){
+				s+=Math.exp(lyr[i].calculatedZ-maxZ)
+			}
+		}
+
+		let nom = Math.exp(lyr[id].calculatedZ-maxZ);
+		let ex = Math.exp(val-maxZ)
+		return -ex*nom/(ex+s)**2
 	}
 
 	setOutputDirectly(val){
@@ -289,10 +330,20 @@ class  NeuroNet{
 			}else{
 				prevLayer = this.introLayer;
 			}
-
-			for (let i=0; i<layer.length; i++){
-				layer[i].calculateErrors(targetOuts[i],prevLayer, nextLayer)
-			}			
+			let isSoftMax=layer[0].activationFunctionType=="softmax";
+			if (!isSoftMax){
+				for (let i=0; i<layer.length; i++){
+					layer[i].calculateErrors(targetOuts[i],prevLayer, nextLayer)
+				}			
+			}else{
+				for (let i=0; i<layer.length; i++){
+					layer[i].calculateDCDAOlnly(targetOuts[i],prevLayer, nextLayer)
+				}			
+				for (let i=0; i<layer.length; i++){
+					layer[i].calculateSoftMaxErrors(targetOuts[i],prevLayer, nextLayer)
+				}			
+			}
+			
 		}
 	}
 

@@ -65,6 +65,20 @@ function drawVerticalLine(){
 	window.ctx.fillStyle="#000000"
 	window.ctx.fillRect(0,0,28,28)
 
+	let x0 = Math.random()*28;
+	let L = Math.random()*14+14;
+	let y0 = Math.random()*(28-L)
+	let dx = (Math.random()*0.5-0.25)*L
+	let x1 = x0+dx;
+	let y1 = y0+L;
+	if (x1<0){x1=0}
+	if (x1>28){x1=28}
+	window.ctx.strokeStyle="#ffffff"
+	window.ctx.lineWidth=1+Math.random()*4;
+	window.ctx.beginPath();
+	window.ctx.moveTo(x0, y0);
+	window.ctx.lineTo(x1, y1);
+	window.ctx.stroke();
 
 }
 
@@ -72,7 +86,20 @@ function drawHorizontalLine(){
 	window.ctx.fillStyle="#000000"
 	window.ctx.fillRect(0,0,28,28)
 
-
+	let x0 = Math.random()*28;
+	let L = Math.random()*14+14;
+	let y0 = Math.random()*(28-L)
+	let dx = (Math.random()*0.5-0.25)*L
+	let x1 = x0+dx;
+	let y1 = y0+L;
+	if (x1<0){x1=0}
+	if (x1>28){x1=28}
+	window.ctx.strokeStyle="#ffffff"
+	window.ctx.lineWidth=1+Math.random()*4;
+	window.ctx.beginPath();
+	window.ctx.moveTo(y0, x0);
+	window.ctx.lineTo(y1, x1);
+	window.ctx.stroke();
 }
 
 //Коли зробите розпізнавання ліній, додайте розпізнавання діагональних ліній, нахилених право та вліво
