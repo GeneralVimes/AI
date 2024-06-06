@@ -4,7 +4,7 @@ class World {
 		this.allBots=[]//боти для великого турніру. Звідси будуть бартися боти по двоє і запускатися серія ігор
 		this.allBotsResults=[];//бали ботів у великому турнірі, у такому ж порядку, як і їхні номери у списку this.allBots
 		this.tournamentScores={}//асоційований об'єкт: бали ботів у турнірі по їх іменах
-		this.tournamentScoresByBots={}//асоційований об'єкт: бали ботів у турнірі по їх посиланнях
+		this.tournamentScoresByBots=new Map()//асоційований об'єкт: бали ботів у турнірі по їх посиланнях
 	}
 	//службова функція - вибір m чисел з масиву unselected до масиву selected
 	recursivelySelect(res, m, selected, unselected){

@@ -16,9 +16,11 @@ window.onload=function(){
 	//window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
 	//та подивитися, чи нові еволюційні боти дадуть кращий результат
 	//створено світ, у якому можна брати 1, 2, 3, виграє той, хто роюбить останній хід, і не можна повторювати 1 попередній хід
-	window.world = new UniversalBachetWorldWithNoRepeats([1,2,3],true,1);
+	window.world = new UniversalBachetWorldWithNoRepeats([1,2,3],true,0);
 	//у цьому світі проводимо турнір з 4 ботів (див. опис ботів у bots.js)
-	window.world.startTournamentBetweenBots([new BotNoRepeatsRandom123("RND"), new BotNoRepeatsMinimal123("MIN"), new BotNoRepeatsMaximall123("MAX"), new BachetNoRepeatsLearnerBot("LEARN")],1000,2,false)
+	// window.world.startTournamentBetweenBots([ new BachetNoRepeatsLearnerBot("LEARN1"),new BachetNoRepeatsLearnerBot("LEARN2"),new BachetBotRandomFixed("RND1"),new BachetBotRandomFixed("RND2"), new Bot123("BEST1"), new Bot123("BEST2")],1,2,false)
+	//window.world.startTournamentBetweenBots([new BachetBotRandom("RND1"), new EvoBot2("EVO1"),new EvoBot2("EVO2"),new EvoBot2("EVO3"),new EvoBot2("EVO4"),new EvoBot2("EVO5"),new EvoBot2("EVO6")],1,2,false)
+	// window.world.startTournamentBetweenBots([new BotNoRepeatsRandom123("RND"), new BotNoRepeatsMinimal123("MIN"), new BotNoRepeatsMaximall123("MAX"), new BachetNoRepeatsLearnerBot("LEARN")],1000,2,false)
 
 /*
 	let obs={}

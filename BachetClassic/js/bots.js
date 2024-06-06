@@ -448,3 +448,126 @@ class BachetNoRepeatsLearnerBot extends Bot{
 		}		
 	}	
 }
+
+class NeuroBot extends Bot{
+	constructor(nm, b1, b2){
+		super(nm)
+		this.myMoves=[]//з яких позиція які зоди робилися
+		this.neuronet=new NeuroNet()
+
+
+		if (b1){
+			if (b2){
+				var dnaOb1 = b1.exportDNA()
+				var dnaOb2 = b2.exportDNA()
+				this.mergeSecondDNA2First(dnaOb1, dnaOb2)
+				this.mutateDNAOb(dnaOb1, 0.1)
+				this.neuronet.buildFromObject(dnaOb1.network)		
+			}else{
+				var dnaOb = b1.exportDNA()
+				this.mutateDNAOb(dnaOb, 0.1)
+				this.neuronet.buildFromObject(dnaOb.network)			
+			}
+
+		}else{
+			this.neuronet.createIntroLayer(7)
+			this.neuronet.createLayer(15)
+			this.neuronet.createLayer(3)	
+		}
+		//правила тут - масив зі 100 чисел, що містить ходи, які треба робити з усіх N
+	}
+	
+	makeMoveForSituation(gameDataOb){
+		let inAr = convertNtoBits(gameDataOb.N);
+		this.neuronet.calculateOutsForInputs(inAr);
+		let nId = this.neuronet.findIdOfMostActivatedOutNeuron();
+		this.myMoves.push({N:gameDataOb.N, nId:nId});
+
+		return {n:nId+1};
+	}
+
+
+	mutateDNAOb(dnaOb, mutProb=0.1){
+		if (Math.random()<mutProb){
+			if (dnaOb.network){
+				for (let i=0; i<dnaOb.network.layers.length; i++){
+					for (let j=0; j<dnaOb.network.layers[i].length; j++){
+						let ob = dnaOb.network.layers[i][j]
+						if (Math.random()<0.1){
+							ob.bias *= (Math.random()*4-2)
+							for (let k=0; k<ob.weights.length; k++){
+								ob.weights[k]*=(Math.random()*4-2)
+							}							
+						}
+					}
+				}
+			}
+		}
+	}
+
+	mergeSecondDNA2First(dnaOb1, dnaOb2){
+		if (dnaOb1.network){
+			if (dnaOb2.network){
+				for (let i=0; i<dnaOb1.network.layers.length; i++){
+					for (let j=0; j<dnaOb1.network.layers[i].length; j++){
+						let ob1 = dnaOb1.network.layers[i][j]
+						let ob2 = dnaOb2.network.layers[i][j]
+						if (Math.random()<0.5){
+							ob1.bias = ob2.bias
+						}
+						for (let k=0; k<ob1.weights.length; k++){
+							if (Math.random()<0.5){
+								ob1.weights[k]=ob2.weights[k]
+							}
+						}
+					}
+				}				
+			}
+		}
+	}
+
+	exportDNA(){
+		return {
+			network:this.neuronet.export2Object()
+		}	
+	}
+
+	getInformedOfGameStart(){
+		this.myMoves.length=0;
+	}
+
+	getInformedOfVictory(){
+		//якщо ми перемогли, ми маємо пройти по зроблених ходах
+		//та більшити імовірніть тих ходів, що привели нас до виграшу
+		for (let i=0; i<this.myMoves.length; i++){
+			let moveOb = this.myMoves[i];
+			//інформація про зроблений хід має вигляд об'єкту 
+			//{N:57, nId:2}
+
+			let inAr = convertNtoBits(moveOb.N);
+			this.neuronet.calculateOutsForInputs(inAr);
+			let idealOutputs=[0,0,0]
+			idealOutputs[moveOb.nId]=1;
+			this.neuronet.calculateErrors(idealOutputs)
+			this.neuronet.adjustParams(0.1);
+		}
+	}
+
+	getInformedOfDefeat(){
+		for (let i=0; i<this.myMoves.length; i++){
+			let moveOb = this.myMoves[i];
+			//інформація про зроблений хід має вигляд об'єкту 
+			//{N:57, nId:2}
+
+			let inAr = convertNtoBits(moveOb.N);
+			this.neuronet.calculateOutsForInputs(inAr);
+			let netOutput = this.neuronet.getOutputs()
+			for (let j=0; j<3; j++){
+				netOutput[j]=Math.max(1, 2*netOutput[j])
+			}
+			netOutput[moveOb.nId]=0;
+			this.neuronet.calculateErrors(netOutput)
+			this.neuronet.adjustParams(0.1);
+		}	
+	}	
+}
