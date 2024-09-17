@@ -301,7 +301,37 @@ class  NeuroNet{
 		}
 		return res
 	}
+	findIdOfRandomWeightedOutNeuronBetween(id0, id1){
+		let sum=0;
+		let lastLayer = this.layers[this.layers.length-1]
+		for (let i=id0; i<=Math.min(id1,lastLayer.length-1); i++){
+			sum+=lastLayer[i].calculatedOutput;
+		}
+		if (sum>0){
+			let r = Math.random()*sum;
+			let id=id0
+			while (r>=lastLayer[id].calculatedOutput){
+				r-=lastLayer[id].calculatedOutput;
+				id++
+			}
+			return id
+		}else{
+			return id0
+		}
+	}
+	findIdOfMostActivatedOutNeuronBetween(id0, id1){
+		let lastLayer = this.layers[this.layers.length-1]
+		let res=id0;
+		let maxOut = lastLayer[id0].calculatedOutput;
 
+		for (let i=id0+1; i<=Math.min(id1,lastLayer.length-1); i++){
+			if (lastLayer[i].calculatedOutput>maxOut){
+				maxOut = lastLayer[i].calculatedOutput;
+				res=i;
+			}
+		}
+		return res;		
+	}
 	findIdOfMostActivatedOutNeuron(){
 		let lastLayer = this.layers[this.layers.length-1]
 		let res=0;
