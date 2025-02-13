@@ -1,14 +1,15 @@
 class Bot{
 	constructor(nm){
 		this.myName=nm
+		this.currentGameRulesObject=null
 	}
 
 	makeMoveForSituation(gameDataOb){
 		return {}
 	}
 	//функції бота, що викликаються грою та дають змогу боту навчитися
-	getInformedOfGameStart(){
-	
+	getInformedOfGameStart(rulesOb){
+		this.currentGameRulesObject=rulesOb
 	}
 
 	getInformedOfVictory(){
@@ -115,7 +116,8 @@ class BachetLearnerBot extends Bot{
 		return {n:madeMove}
 	}
 	//функції бота, що викликаються грою та дають змогу боту навчитися
-	getInformedOfGameStart(){
+	getInformedOfGameStart(rulesOb){
+		super.getInformedOfGameStart(rulesOb)
 		this.myMoves.length=0;
 	}
 
@@ -401,7 +403,8 @@ class BachetNoRepeatsLearnerBot extends Bot{
 		return {n:madeMove}
 	}
 	//функції бота, що викликаються грою та дають змогу боту навчитися
-	getInformedOfGameStart(){
+	getInformedOfGameStart(rulesOb){
+		super.getInformedOfGameStart(rulesOb)
 		this.myMoves.length=0;
 	}
 
@@ -460,9 +463,16 @@ class NeuroBot extends Bot{
 			if (b2){
 				var dnaOb1 = b1.exportDNA()
 				var dnaOb2 = b2.exportDNA()
-				this.mergeSecondDNA2First(dnaOb1, dnaOb2)
-				this.mutateDNAOb(dnaOb1, 0.1)
-				this.neuronet.buildFromObject(dnaOb1.network)		
+				let resDNA = dnaOb1
+				if (Math.random()<0.5){
+					this.mergeSecondDNA2First(dnaOb1, dnaOb2)
+				}else{
+					this.mergeSecondDNA2First(dnaOb2, dnaOb1)
+					resDNA = dnaOb2
+				}
+				
+				this.mutateDNAOb(resDNA, 0.1)
+				this.neuronet.buildFromObject(resDNA.network)		
 			}else{
 				var dnaOb = b1.exportDNA()
 				this.mutateDNAOb(dnaOb, 0.1)
@@ -486,21 +496,77 @@ class NeuroBot extends Bot{
 		return {n:nId+1};
 	}
 
-
+	//варіанти мутацій
+	//0. Для 10% нейронів міняємо їхні вхідні ваги та біаси
+	//1. Видаляємо випадковий нейрон (не з останнього слоя)
+	//2. Додаємо випадковий нейрон (не на останній слой)
+	//3. Видаляємо цілий слой (не останній)
+	//4. Дублюємо цілий слой та ставимо його перед поточним
 	mutateDNAOb(dnaOb, mutProb=0.1){
 		if (Math.random()<mutProb){
 			if (dnaOb.network){
-				for (let i=0; i<dnaOb.network.layers.length; i++){
-					for (let j=0; j<dnaOb.network.layers[i].length; j++){
-						let ob = dnaOb.network.layers[i][j]
-						if (Math.random()<0.1){
-							ob.bias *= (Math.random()*4-2)
-							for (let k=0; k<ob.weights.length; k++){
-								ob.weights[k]*=(Math.random()*4-2)
-							}							
+				let mutationTypeId = Math.floor(Math.random()*3)
+				switch(mutationTypeId){
+					case 0:{
+						let mutPerc = 0.1
+						let mutCoef = 2;
+						for (let i=0; i<dnaOb.network.layers.length; i++){
+							for (let j=0; j<dnaOb.network.layers[i].length; j++){
+								let ob = dnaOb.network.layers[i][j]
+								if (Math.random()<mutPerc){
+									ob.bias *= ((Math.random()*2-1)*mutCoef)
+									for (let k=0; k<ob.weights.length; k++){
+										ob.weights[k]*=((Math.random()*2-1)*mutCoef)
+									}							
+								}
+							}
+						}						
+						break;
+					}
+					case 1:{
+						if (dnaOb.network.layers.length>0){
+							let lid = Math.floor((dnaOb.network.layers.length-1)*Math.random())
+							let nid = Math.floor(dnaOb.network.layers[lid].length*Math.random())
+							dnaOb.network.layers[lid].splice(nid,1)
+							for (let j=0; j<dnaOb.network.layers[lid+1].length; j++){
+								let ob = dnaOb.network.layers[lid+1][j]
+								ob.weights.splice(nid,1)
+							}
 						}
+						break;
+					}
+					case 2:{
+						if (dnaOb.network.layers.length>0){
+							let lid = Math.floor((dnaOb.network.layers.length-1)*Math.random())
+							let nid = dnaOb.network.layers[lid].length
+							let prevNeuoronOb = dnaOb.network.layers[lid][nid-1]
+							dnaOb.network.layers[lid].push({
+									bias:prevNeuoronOb.bias,
+									function:prevNeuoronOb.function,
+									weights:prevNeuoronOb.weights.slice()								
+								}
+							)
+							for (let j=0; j<dnaOb.network.layers[lid+1].length; j++){
+								let ob = dnaOb.network.layers[lid+1][j]
+								ob.weights.push((Math.random()-0.5)/(nid+1))
+							}
+						}						
+						break;
+					}
+					case 3:{
+						
+						break;
+					}
+					case 4:{
+						
+						break;
 					}
 				}
+
+
+
+
+
 			}
 		}
 	}
@@ -508,20 +574,23 @@ class NeuroBot extends Bot{
 	mergeSecondDNA2First(dnaOb1, dnaOb2){
 		if (dnaOb1.network){
 			if (dnaOb2.network){
-				for (let i=0; i<dnaOb1.network.layers.length; i++){
-					for (let j=0; j<dnaOb1.network.layers[i].length; j++){
+				let minLayers = Math.min(dnaOb1.network.layers.length, dnaOb2.network.layers.length)
+				for (let i=0; i<minLayers; i++){
+					let minNeuronsOnLayer = Math.min(dnaOb1.network.layers[i].length,dnaOb2.network.layers[i].length);
+					for (let j=0; j<minNeuronsOnLayer; j++){
 						let ob1 = dnaOb1.network.layers[i][j]
 						let ob2 = dnaOb2.network.layers[i][j]
 						if (Math.random()<0.5){
 							ob1.bias = ob2.bias
 						}
-						for (let k=0; k<ob1.weights.length; k++){
+						let minWeights = Math.min(ob1.weights.length, ob2.weights.length)
+						for (let k=0; k<minWeights; k++){
 							if (Math.random()<0.5){
 								ob1.weights[k]=ob2.weights[k]
 							}
 						}
 					}
-				}				
+				}								
 			}
 		}
 	}
@@ -532,7 +601,8 @@ class NeuroBot extends Bot{
 		}	
 	}
 
-	getInformedOfGameStart(){
+	getInformedOfGameStart(rulesOb){
+		super.getInformedOfGameStart(rulesOb)
 		this.myMoves.length=0;
 	}
 
