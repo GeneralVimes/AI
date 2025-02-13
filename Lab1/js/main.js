@@ -3,7 +3,7 @@ window.onload=function(){
 	window.world = new BachetWorld();
 	// world.startTournament([BachetBot1, BachetBot2],100)
 	// window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1000)
-	//window.world = new UniversalBachetWorld([1,2,3],true);
+	//window.world = new UniversalBachetWorld([1,3,4],true);
 	// window.world.startTournament([BachetBotRandom, BachetBotRandomFixed],1, true)
 	// window.world.startTournamentBetweenBots([new BachetBotRandom("A"), new BachetBotRandomFixed("B"), new BachetBotRandomFixed("C")],1000,2,false)
 	//провести турнір між ботами із заданою поведінкою та еволюційними ботами
