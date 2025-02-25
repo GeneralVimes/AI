@@ -501,7 +501,7 @@ class UniversalBachetWorld extends BachetWorld{
 
 	buildCurrentRulesObject(){
 		return {
-			allowedMoves:this.allowedMoves.slice,
+			allowedMoves:this.allowedMoves.slice(),
 			isLastMoveWinner:this.isLastMoveWinner,
 			numPlayers:this.bots.length
 		}
@@ -550,7 +550,7 @@ class UniversalBachetWorldWithNoRepeats extends UniversalBachetWorld{
 
 	buildCurrentRulesObject(){
 		return {
-			allowedMoves:this.allowedMoves.slice,
+			allowedMoves:this.allowedMoves.slice(),
 			numForbiddenRepeats:this.numForbiddenRepeats,
 			isLastMoveWinner:this.isLastMoveWinner,
 			numPlayers:this.bots.length
