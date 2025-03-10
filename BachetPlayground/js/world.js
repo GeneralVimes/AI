@@ -64,33 +64,17 @@ class World {
 		this.tournamentScoresByBots=new Map();
 		for (let i=0; i<this.allBots.length; i++){
 			this.allBotsResults.push(0);
-			this.tournamentScores[this.allBots[i].myName]=0
-			this.tournamentScoresByBots.set(this.allBots[i],0);
 		}
-		//визначаємо всі способи обрати по numBotsInOneGame серед всіх ботів
 		let botsIdsInGames = this.listSelectionsOfMFromN(numBotsInOneGame,this.allBots.length);
-		
-		//перемішуємо індивідуальні партії у випадковому порядку
+		//визначаємо всі способи обрати по numBotsInOneGame серед всіх ботів
 		for (let i=0; i<botsIdsInGames.length; i++){
-			for (let j=i+1; j<botsIdsInGames.length; j++){
-				if (Math.random()<0.5){
-					let tmp = botsIdsInGames[i];
-					botsIdsInGames[i]=botsIdsInGames[j]
-					botsIdsInGames[j]=tmp
-				}
+			let usedBotsInThisGame=botsIdsInGames[i];
+			this.bots=[];
+			for (let j=0; j<usedBotsInThisGame.length; j++){
+				this.bots.push(this.allBots[usedBotsInThisGame[j]]);
 			}
-		}
-
-		//запускаємо партії між ботами
-		for (let k=0; k<numGames; k++){
-			//пробігаємо по всіх можливих групах ботів з загального списку для гри
-			for (let i=0; i<botsIdsInGames.length; i++){
-				let usedBotsInThisGame=botsIdsInGames[i];
-				//console.log(usedBotsInThisGame)
-				this.bots=[];
-				for (let j=0; j<usedBotsInThisGame.length; j++){
-					this.bots.push(this.allBots[usedBotsInThisGame[j]]);
-				}
+			//обираємо ботів для поточної серіїї ігор з загального списку ботів
+			for (let i=0; i<numGames; i++){
 				this.startGame(showLog)
 			}			
 		}
@@ -426,35 +410,45 @@ class World {
 		}
 	}
 }
+//що має вміти ігровий світ?
+//влаштовувати турнір між ботами
+//турнір складаєть з кількох ігор
+	//кожна гра складається з:
+	//генерується випадкове початкове число
+	//ініцалізуються боти, їх задається випадкова черга ходу
+	//відповідно черги ходу ботам повідомляється поточна ігрова ситуація 
+	//на яку бот відповідає ходом, який хоче зробити
+	//світ перевіряє, чи підпадає хід під правила гри
+	//якщо так, то хід робиться, змінюється ігрова ситуація та хід переходить до наступного боту
+	//якщо ні, є 2 варіанти дій: а) зробити допустимий хід, якомога ближче до того, який бажає бот
+	//б) при некоректному ході зарахувати програш
+	//гра продовжується, доки не настсне умова виграшу однієї за сторін
+//після завершення гри оновлюємо результати ботів у турнірі
+//після завершення турніру видаємо результати
 
-class TTTWorld extends World{
+class BachetWorld extends World{
 	constructor(){
 		super()
-		console.log("TTTWorld created")
-		this.board = ["_","_","_","_","_","_","_","_","_"]
-		//this.N = 100;
-	}	
+		console.log("BachetWorld created")
 
-	initNewGamePosition(){
-		for (let i=0; i<9; i++){
-			this.board[i]="_";
-		}
-		//this.board="X,_,_,_,O,_,_,_,X".split(",")
+		this.N = 100;
 	}
 
-	buildCurrentGameSituation(){
-		return{
-			board:this.board.slice()
-		}
+	isGameOver(){
+		return this.N<=0;
 	}
-	//отримаємо від бота moveOb має бути {id:0..8}
-	//перевіряємо, щоб число було цілим від 0 до 8, і щоб клітинка була вільна
+
+	//{n:1..3}
+	makeBotMove(moveOb){
+		this.N-=moveOb.n
+	}
+	//moveOb має бути {n:1..3}
 	validateMove(moveOb){
 		let res = true;
-		if ("id" in moveOb){
-			if (Math.floor(moveOb["id"])===moveOb["id"]){
-				if (moveOb["id"]>=0 && moveOb["id"]<=8){
-					if (this.board[moveOb["id"]]=="_"){
+		if (moveOb["n"]){
+			if (Math.floor(moveOb["n"])===moveOb["n"]){
+				if (moveOb["n"]>=1 && moveOb["n"]<=3){
+					if (moveOb["n"]<=this.N){
 						res=true;
 					}else{
 						res=false;
@@ -469,136 +463,134 @@ class TTTWorld extends World{
 			res=false;
 		}
 
-		return res		
+		return res
 	}
-	//moveOb має бути {id:0..8}
-	makeBotMove(moveOb){
-		let numX = 0;
-		let numO = 0;
-		//разуємо, скільки на дошці хрестиків та нуликів
-		for (let i=0; i<=8; i++){
-			if (this.board[i]=="X"){
-				numX++
-			}
-			if (this.board[i]=="O"){
-				numO++
-			}
-		}
-		//якщо хрестиків однаково з нуліками, це хід хрестика, інакше - хід нулика
-		if (numX==numO){
-			this.board[moveOb["id"]]="X"
-		}else{
-			this.board[moveOb["id"]]="O"
-		}
-	}
-	//можуть бути варіанти:
-	//гра іде далі //-1
-	//гра завершилася внічию //0
-	//гра завершилася виграшем останнього гравця //1
-	//гра завершилася програшем останнього гравця //2
-	defineGameEnding(){
-		//спочатку пошукаємо ряд з однакових символів
-		let possibleStarts=[0,3,6,0,1,2,0,2];
-		let possibleSteps=[1,1,1,3,3,3,4,2];
-		var hasLine = false;
-		for (let i=0; i<possibleStarts.length; i++){
-			let start = possibleStarts[i]
-			let step = possibleSteps[i]
-			if (this.board[start]!="_"){
-				if (this.board[start+step]==this.board[start]){
-					if (this.board[start+2*step]==this.board[start]){
-						hasLine = true;
-						break;
-					}
-				}
-			}
-		}
-		//якщо лінію знайдено
-		if (hasLine){
-			return 1
-		}
-		var canBeDraw=true
-		for (let i=0; i<this.board.length; i++){
-			if (this.board[i]=="_"){
-				canBeDraw=false;
-				break;
-			}
-		}
-		if (canBeDraw){
-			return 0//нічия
-		}else{
-			return -1//гра продовжується
+
+	buildCurrentRulesObject(){
+		return {
+			allowedMoves:[1,2,3],
+			isLastMoveWinner:this.isLastMoveWinner,
+			numPlayers:this.bots.length
 		}
 	}
 
-	startGame(showLog=true){
-		//боти вже є
-		this.initNewGamePosition();
+	buildCurrentGameSituation(){
+		return {N:this.N}
+	}	
 
-		this.randomizeMoveOrder();
+	initNewGamePosition(){
+		this.N = Math.floor(50+Math.random()*50)
+	}	
 
-		this.informBotsOfGameStart()
+	calculateGamePoints(currentBotId){
+		this.giveVictoryToSingleBot(currentBotId)
+	}
 
-		//доки гра не закінчена, робимо ходи
-		let currentBotId = 0;
-		while(true){//ходи продовжуємо, поки гра триває
-			//будуємо ситуація для показу боту
-			let ob = this.buildCurrentGameSituation()
-			if (showLog)console.log("Situation ",ob)
-			//який бот зараз ходить
-			if (showLog)console.log("Bot ",currentBotId,this.bots[currentBotId].myName , "moves")
-			let bot = this.bots[currentBotId]
-			//показуємо боту ситуація та отримуємо від нього хід
-			let botMove = bot.makeMoveForSituation(ob)
-			if (showLog)console.log("Bot Move: ",botMove)
-			//якщо хід задовольняє правилам
-			if (this.validateMove(botMove)){
-				//виконуємо цей хід
-				this.makeBotMove(botMove);
-				//чи продовжується гра після ходу?
-				let gameNextDo = this.defineGameEnding()
-				if (gameNextDo==1){
-					if (showLog)console.log("GAME OVER with victory! Calculating points...")
-					//за виграш будемо давати 3 бали
-					this.giveVictoryToSingleBot(currentBotId)
-					this.giveVictoryToSingleBot(currentBotId)
-					this.giveVictoryToSingleBot(currentBotId)
-					break;
-				}
-				if (gameNextDo==0){//за нічию даємо обом гравцям по 1 балу
-					if (showLog)console.log("GAME OVER with DRAW! Calculating points...")
-					// this.calculateGamePoints(currentBotId,1)
-					// this.calculateGamePoints(1-currentBotId,1)
-					//щоб не писати нову функцію, будемо використовувати ту, 
-					// яка дає бали усім ботам окрім бота -1 (тобто неіснуючого)
-					this.giveDefeatToSingleBot(-1)
-					break;
-				}
-				if (gameNextDo==-1){
-					currentBotId++;
-					currentBotId%=this.bots.length					
-				}
-			}else{
-				//якщо хід не задовольняє правилам, то зупиняємо гру, зарахувавши боту програш
-				if (showLog)console.log("BOT ERROR! Calculating points...")
-				this.giveDefeatToSingleBot(currentBotId);
-				break;
-			}
-		}
-	}		
+	stopGameAfterBotError(botId){
+		//перемога всім іншим
+		this.giveDefeatToSingleBot(botId)
+	}	
 }
 
-//що має вміти ігровий світ?
-//влаштовувати турнір між ботами
-//турнір складаєть з кількох ігор
-	//кожна гра складається з:
-	//генерується випадкове початкове число
-	//ініцалізуються боти, їх задається випадкова черга ходу
-	//відповідно черги ходу ботам повідомляється поточна ігрова ситуація 
-	//на яку бот відповідає ходом, який хоче зробити
-	//світ перевіряє, чи підпадає хід під правила гри
-	//якщо так, то хід робиться, змінюється ігрова ситуація та хід переходить до наступного боту
-	//якщо ні то, при некоректному ході зарахувати програш
-	//гра продовжується, доки не настсне умова виграшу однієї за сторін
-//після завершення гри оновлюємо результати ботів у турнірі
-//після завершення турніру видаємо результати
+class UniversalBachetWorld extends BachetWorld{
+	constructor(movesAr=[1,2,3], isLastMoveWinner=true){
+		super()
+		this.allowedMoves=movesAr;
+		this.isLastPlayerWinner=isLastMoveWinner;
+	}
+
+	buildCurrentRulesObject(){
+		return {
+			allowedMoves:this.allowedMoves.slice(),
+			isLastMoveWinner:this.isLastMoveWinner,
+			numPlayers:this.bots.length
+		}
+	}
+
+	validateMove(moveOb){
+		let res=false;
+		if (moveOb["n"]){
+			if (this.allowedMoves.indexOf(moveOb.n)!=-1){//якщо зроблений гравцем хід є серед дозволених
+				if (moveOb.n<=this.N){
+					res=true;
+				}
+			}
+		}
+		return res;
+	}
+	//гра завершена, коли каміння залишилося менше, ніж найменший можливий хід
+	isGameOver(){
+		let res=true;
+		for (let i=0; i<this.allowedMoves.length; i++){
+			if (this.allowedMoves[i]<=this.N){
+				res=false;
+				break;
+			}
+		}
+
+		return res;
+	}	
+	//ця функція викликається після ходу, яких завершує гру
+	calculateGamePoints(currentBotId){
+		//currentBotId - номер бота, який зробив останній хід
+		if (this.isLastPlayerWinner){
+			this.giveVictoryToSingleBot(currentBotId)
+		}else{
+			this.giveDefeatToSingleBot(currentBotId)
+		}
+	}
+}
+
+class UniversalBachetWorldWithNoRepeats extends UniversalBachetWorld{
+	constructor(movesAr=[1,2,3], isLastMoveWinner=true, nunNonRepeats=1){
+		super(movesAr,isLastMoveWinner)
+		this.numForbiddenRepeats=nunNonRepeats;
+		this.forbiddenMoves=[];
+	}
+
+	buildCurrentRulesObject(){
+		return {
+			allowedMoves:this.allowedMoves.slice(),
+			numForbiddenRepeats:this.numForbiddenRepeats,
+			isLastMoveWinner:this.isLastMoveWinner,
+			numPlayers:this.bots.length
+		}
+	}
+
+	validateMove(moveOb){
+		let res = super.validateMove(moveOb)
+		if (res){
+			if (this.forbiddenMoves.indexOf(moveOb["n"])!=-1){
+				res=false;
+			}		
+		}
+		return res;
+	}
+	initNewGamePosition(){
+		super.initNewGamePosition();
+		this.forbiddenMoves.length=0;
+	}
+	//{n:1..3}
+	makeBotMove(moveOb){
+		this.N-=moveOb.n
+		this.forbiddenMoves.push(moveOb.n);
+		if (this.forbiddenMoves.length>this.numForbiddenRepeats){
+			this.forbiddenMoves.splice(0,1)
+		}
+	}
+	buildCurrentGameSituation(){
+		return {N:this.N, forbiddenMoves:this.forbiddenMoves.slice()}
+	}		
+	isGameOver(){	
+		let minPossibleMove=NaN;
+		for (let i=0; i<this.allowedMoves.length; i++){
+			let val = this.allowedMoves[i];
+			if (this.forbiddenMoves.indexOf(val)==-1){
+				if ((isNaN(minPossibleMove))||(val<minPossibleMove)){
+					minPossibleMove=val;
+				}
+			}
+		}
+		return (minPossibleMove>this.N)||(this.N<=0);
+	}
+}
