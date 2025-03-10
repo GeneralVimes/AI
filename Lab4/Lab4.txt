@@ -1,0 +1,213 @@
+**Інструкції до виконання лабораторної роботи "Генетичні алгоритми"**
+У даній лабораторній роботі ми ознайомимося з ботами, які передають свох вміння грати нащадкам, і за рахунок цього вся популяція поступово грає краще
+
+**Крок 1**
+Відкрийте папку Lab4. Запустіть файл index.html у браузері та відкрийте консоль браузера.
+На старті роботи скрипта main.js створюється ігровий світ для гри Баше, у якій допускається брати 1, 2 чи 3 камінці та виграє той, хто забирає останній предмет.
+
+Проведіть у цьому ігровому світі турнір, у якому візьмуть участь:
+BachetBot123Best - бот, що реалізує виграшну стратегію для гри з можливими ходами 1, 2, 3 та в якій останній гравець виграє
+BachetBotRandomSmart - бот, що бере випадкове чиcло камінців
+BachetBot3Smart - бере 3, якщо є така можливість, інакше - 2 або 1
+BachetBot2Smart - бере 2, якщо є така можливість, інакше - 1
+BachetBot1 - берез 1 камінець завжди
+а також п'ять еволюційних ботів EvoBotSimple
+window.world.startTournamentBetweenBots([new BachetBot123Best("Best"), new BachetBotRandomSmart("RND"),  new BachetBot1("Bot1"), new BachetBot2Smart("Bot2"), new BachetBot3Smart("Bot3"), new EvoBotSimple("EVO1"), new EvoBotSimple("EVO2"),new EvoBotSimple("EVO3"),new EvoBotSimple("EVO4"),new EvoBotSimple("EVO5")],1000,2,false)
+
+Запишіть результати цього турніру
+
+Залиште лише 3 кращих еволюційних ботів, виконавши команду у консолі:
+	window.world.keepNoMoreThanKBestBotsOfClass(EvoBotSimple,3)
+Переконайтеся, що залишилися лише EvoBot-и з кращими результатами, вивівши список всіх ботів у консоль
+	window.world.allBots
+
+**Крок 2**
+Поведінкою еволюційних ботів керує їхня ДНК. Для EvoBotSimple це масив rules, кожен його елемент rules[N] вказує, яку кількість камінців бот буде брати з позиції у N камінців
+
+Створіть 5 нових еволюційних ботів взявши тих, що залишилися, як основу. Для цього виконайте команду:
+	window.world.createOnlyKDescendantsOfBestBotsOfClass(EvoBotSimple,5,"A")
+Роздивіться нових ботів:
+	window.world.allBots
+
+Серед них будуть ті, які створюються схрещуванням двох предків та ті, які створилися з допомогою мутації одного з предків.
+
+Роздивіться бота, створеного з допомогою мутації.  Його ім'я закінчується на _mut та містить ім'я бота, взятого за основу.
+Визначте, чим його ДНК відрізняється від батьківського бота
+
+Роздивіться бота, створеного з допомогою схрещування. Він у своєму імені має імена батьків
+Визначте, яка частина з його ДНК взята з якого з батьківських ботів
+
+Проведіть турнір з усіх ботів. Оскільки нам потрібно не створювати нових ботів для турніру, а використати існуючих, зробіть це командою:
+window.world.startTournamentBetweenBots(window.world.allBots,1000,2,false)
+
+**Крок 3**
+Зробіть наступний відсів еволюційних ботів, залишивши 4 кращих
+window.world.keepNoMoreThanKBestBotsOfClass(EvoBotSimple,4)
+Подивіться, чи залишилися боти з першого покоління серед кращих?
+
+Визначте, з якою імовірністю еволюційні боти будуть робити виграшні ходи. Для цього виконайте скрипт:
+let s=""
+for (let i=0; i<100; i++){
+    if (i%4!=0){
+        let total = 0
+        let correct = 0
+        for (let k=0; k<window.world.allBots.length; k++){
+            let b = window.world.allBots[k]
+            if (b instanceof EvoBotSimple){
+                moveOb = b.makeMoveForSituation({N:i})
+                if (moveOb.n==i%4){
+                    correct+=1
+                }
+                total+=1
+            }
+        }
+        s+=i+"\t"+correct/total+"\n"
+    }
+}
+console.log(s)
+
+**Крок 4**
+Виконайте зміну 10 поколінь еволюційних ботів. Нехай на кожному поколінні створюватимемо 30 нащадків, а після турніру залишатимемо 15 кращих
+for (let i=0; i<10; i++){
+	console.log("Generation: ",i)
+    window.world.createOnlyKDescendantsOfBestBotsOfClass(EvoBotSimple,30,"B"+i)
+    window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+    window.world.keepNoMoreThanKBestBotsOfClass(EvoBotSimple,15)
+}
+
+Роздивіться ДНК ботів
+Побудуйте знову графік імовірності для них зробити виграшний хід.
+
+Побудуйте такі ж графіки ще після 50, після 100 та після 150 поколінь
+
+**Крок 5**
+Дізнайтеся, скільки треба поколінь, щоб BachetBot123Best програв хоча б одну партію
+Для цього виконайте скрипт:
+let i=0
+while (i<10000){
+    console.log("Generation: ",i)
+    window.world.createOnlyKDescendantsOfBestBotsOfClass(EvoBotSimple,30,"X"+i)
+    window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+    let maxScore = (window.world.allBots.length-1)*100
+    window.world.keepNoMoreThanKBestBotsOfClass(EvoBotSimple,15)
+    if (window.world.findBestTournamentResultOfBotsOfClass(BachetBot123Best)<maxScore){
+        break;
+    }
+    i++
+}
+
+Знов побудуйте графік імовірності зробити виграшний хід для EvoBotSimple
+
+**Крок 6**
+Відслідкуємо, як покращуються результати еволюційних ботів від покоління до покоління
+Для цього спочатку перезагрузіть сторінку, щоб скинути налаштування ігрового світу
+Створіть 15 еволюційних ботів, одного рандомного та одного ідеального:
+
+window.world.createKNewBotsOfClass(EvoBotSimple,15,"EVO")
+window.world.createKNewBotsOfClass(BachetBot123Best,1,"Best")
+window.world.createKNewBotsOfClass(BachetBotRandomSmart,1,"RND")
+
+Проведіть 250 турнірів та змін поколінь:
+
+let scores=[]
+for (let i=0; i<250; i++){
+    console.log("Generation: ",i)
+    window.world.createOnlyKDescendantsOfBestBotsOfClass(EvoBotSimple,30,"X"+i)
+    window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+    let ar=[]
+    ar.push(window.world.findBestTournamentResultOfBotsOfClass(BachetBot123Best))
+    ar.push(window.world.findBestTournamentResultOfBotsOfClass(BachetBotRandomSmart))
+    ar.push(window.world.findBestTournamentResultOfBotsOfClass(EvoBotSimple))
+    ar.push(window.world.findAverageTournamentResultOfBotsOfClass(EvoBotSimple))
+    scores.push(ar)
+    window.world.keepNoMoreThanKBestBotsOfClass(EvoBotSimple,15)    
+}
+console.table(scores)
+
+Побудуйте графіки успішності ботів у турнірах
+
+**Крок 7**
+Не перезавантажуючи сторінку змініть правила гри. Нехай тепер гравець, який зробив останній хід, програє
+window.world.isLastPlayerWinner=false
+І проведіть ще 250 турнірів та змін поколінь
+Побудуйте графіки успішності ботів після зміни правил. Роздивіться їхні ДНК: чи навчилися вони брати 3 каміня, коли в купі є 4 камінці?А чи навчилися брати виграшні ходи з більших N, наприклад, з 12?
+
+**Крок 8**
+Як ми побачили, EvoBotSimple засновані на простій ідеї, демонструють вміння навчатися, але витрачають дуже багато часу, щоб перемогти BachetBot123Best або щоб вигравати майже всуху у BachetBotRandomSmart після зміни правил
+Тому розглянемо альтернативний варіант еволюційного бота, EvoBotDiv
+Його ДНК складається з трійок чисел {a, b, c}. Кожна така трійка інтерпретується як правило: "Якщо поточна кількість каменів при діленні на a дає остачу b, треба брати c камінців"
+
+Перезавантажте сторінку браузера
+Сторіть 5 еволюційних ботів, 1 ідеального та 1 випадкового та проведіть між ними 1 турнір:
+window.world.createKNewBotsOfClass(EvoBotDiv,5,"EVO")
+window.world.createKNewBotsOfClass(BachetBot123Best,1,"Best")
+window.world.createKNewBotsOfClass(BachetBotRandomSmart,1,"RND")
+window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+
+Залиште 3 кращих еволюційних ботів та створіть 5 їх нащадків (зверніть увагу, що ім'я класу цих ботів EvoBotDiv):
+window.world.keepNoMoreThanKBestBotsOfClass(EvoBotDiv,3)
+window.world.createOnlyKDescendantsOfBestBotsOfClass(EvoBotDiv,5)
+
+Розгляньте ДНК нащадків та визначте, які їх частини вони взяли від кого з батьків
+Також знайдіть ботів-мутантів (якщо таких не буде, створіть більше нащадків) та визначте, де саме в них відбулася мутація
+
+**Крок 9**
+Проведіть зміну поколінь, поки еволюційні боти не навчаться грати на рівні з BachetBot123Best
+let scores=[]
+for (let i=0; i<2500; i++){
+    console.log("Generation: ",i)
+    window.world.createOnlyKDescendantsOfBestBotsOfClass(EvoBotDiv,30,"X"+i)
+    window.world.startTournamentBetweenBots(window.world.allBots,100,2,false)
+    let ar=[]
+    let scrBest = window.world.findBestTournamentResultOfBotsOfClass(BachetBot123Best)
+    let scrEvo = window.world.findBestTournamentResultOfBotsOfClass(EvoBotDiv)
+
+    ar.push(window.world.findBestTournamentResultOfBotsOfClass(BachetBot123Best))
+    ar.push(window.world.findBestTournamentResultOfBotsOfClass(BachetBotRandomSmart))
+    ar.push(window.world.findBestTournamentResultOfBotsOfClass(EvoBotDiv))
+    ar.push(window.world.findAverageTournamentResultOfBotsOfClass(EvoBotDiv))
+    scores.push(ar)
+    window.world.keepNoMoreThanKBestBotsOfClass(EvoBotDiv,15)    
+    if (scrEvo>=scrBest){
+        break;
+    }
+}
+console.table(scores)
+
+Скільки поколінь це займе?
+Побудуйте графіки того, як змінювалися турнірні результати ботів різних ботів
+
+**Крок 10**
+Побудуйте графік імовірності ботам EvoBotDiv робити виграшні ходи
+let s=""
+for (let i=0; i<100; i++){
+    if (i%4!=0){
+        let total = 0
+        let correct = 0
+        for (let k=0; k<window.world.allBots.length; k++){
+            let b = window.world.allBots[k]
+            if (b instanceof EvoBotDiv){
+                moveOb = b.makeMoveForSituation({N:i})
+                if (moveOb.n==i%4){
+                    correct+=1
+                }
+                total+=1
+            }
+        }
+        s+=i+"\t"+correct/total+"\n"
+    }
+}
+console.log(s)
+
+**Крок 10**
+Продовжіть зміну поколінь, поки середній результат ботів EvoBotDiv не перевищить результат бота BachetBot123Best. Скрипт з кроку 9 потребуватиме для цього всього однієї зміни
+Розширте таблицю рахунків ботів у турнірах новими даними
+
+**Крок 11**
+Роздивіться та випишіть ДНК трьох кращих еволюційних ботів. Чи знайдуться у ДНК "гени", які дублюються? А такі, що взагалі ніколи не спрацьовують при жодних значеннях N?
+
+**Крок 12**
+Не перезавантажуючи сторінку браузера, змініть правила гри. Нехай тепер гравець, який зробив останній хід, програє
+window.world.isLastPlayerWinner=false
+Починайте проводити турніри за зміни поколінь доти, доки результат Рандомного бота не знизиться нижче 10. Подумайте, що для цього треба змінити у скрипті з кроку 9
+Побудуйте графіки за отриманими даними

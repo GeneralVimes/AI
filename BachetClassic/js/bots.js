@@ -165,11 +165,11 @@ class BachetLearnerBot extends Bot{
 	}	
 }
 //бот, що вміє еволюціонувати
-class EvoBot extends Bot{
+class EvoBotDiv extends Bot{
 	constructor(nm, b1, b2){
 		super(nm)
 		//може бути свторений просто так, а можуть бути вказані 1 чи 2 батьківських ботів
-		//масив правид, "ДНК" бота, що визначає його поведінку
+		//масив правил, "ДНК" бота, що визначає його поведінку
 		this.rules=[]
 		if (b1){
 			if (b2){
@@ -268,7 +268,7 @@ class EvoBot extends Bot{
 }
 
 //аналогічний бот, що вміє еволюціонувати
-class EvoBot2 extends Bot{
+class EvoBotSimple extends Bot{
 	constructor(nm, b1, b2){
 		super(nm)
 		//правила тут - масив зі 100 чисел, що містить ходи, які треба робити з усіх N
