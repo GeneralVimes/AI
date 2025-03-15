@@ -19,7 +19,7 @@ window.world.allowedMoves=[1,2,3,4]
 
 **Крок 3**
 BachetBotRandomSmart робить випадкові ходи тільки з діапазону 1, 2, 3. Він також не знає про те, що правила гри можуть змінитися
-Створіть бота UniversalRandomBot на основі BachetBotRandomSmart
+Створіть бота UniversalRandomBot, які буде робити ходи, що не порушують правил, але брати їх з правил поточної гри
 Функція ходу для цього бота матиме вигляд:
 
 	makeMoveForSituation(gameDataOb){
@@ -39,7 +39,7 @@ BachetBotRandomSmart робить випадкові ходи тільки з д
 
 
 Проведіть турнір для 4х ботів спочатку для стандартних правил гри
-window.world.startTournamentBetweenBots([new UniversalBot("Universal"), new BachetBot123Best("Best"), new BachetBotRandomSmart("RND")], 10000, 2, false)
+window.world.startTournamentBetweenBots([new UniversalBot("Universal"), new BachetBot123Best("Best"), new BachetBotRandomSmart("RND"), new UniversalRandomBot("URND")], 10000, 2, false)
 А потім - для правил, за якими дозволено брати 1,2,3 або 4
 
 Запишіть результати обох турнірів та поясніть їх
@@ -56,7 +56,7 @@ window.world.isLastPlayerWinner=false
 Модифікуйте код UniversalBot так, щоб він правильно оцінював, чи є позиція виграшною чи програшною і для правил гри, коли останній хід веде до програшу
 Подумайте, як це зробити
 
-Зробивши, запустіть попередній турнір зно, на правилах, коли можна брати 1, 2, 3, 4 камінці, а останній хід веде до програшу
+Зробивши, запустіть попередній турнір на правилах, коли можна брати 1, 2, 3, 4 камінці, а останній хід веде до програшу
 Запишіть результати цього турніру
 
 **Крок 5**
