@@ -30,7 +30,7 @@ window.onload=function(){
 			return 1
 		}
 	}
-
+	window.findCorrectActivation=findCorrectActivation
 	//будуємо навчальну вибірку. Це буде масив об'єктів
 	//У кожного об'єкта буде 3 елементи:
 	//input_arr - вхідні числа
@@ -39,8 +39,8 @@ window.onload=function(){
 	//out_arr - активація вихідного шару для ідеально навченої нейромережі (масив з 0 та 1)
 	//Наприклад:
 	//{	input_arr:[3,4], correct_neuron_id:4, out_arr:[0,1]	}
-	
-	let learningData=[];
+	//Блок 3. Побудова навчальної вибірки
+	var learningData=[];
 	for (let i=0; i<100000; i++){
 		
 		let x = Math.random()*20-10
@@ -60,7 +60,8 @@ window.onload=function(){
 		learningData.push(ob)
 	}
 
-	//тепер проганяємо цю навчальну вибірку по нейромережі 
+	//тепер проганяємо цю навчальну вибірку по нейромережі
+	//Блок 4. Навчання нейромережі  
 	for (let i=0; i<learningData.length; i++){
 		let dataOb = learningData[i];
 		
@@ -75,9 +76,10 @@ window.onload=function(){
 	//тепер треба перевірити, як мережа навчилася. Будуємо тестову вибірку
 	//вона будується так само, як і навчальна. Але діапазон даних можна розширити, щоб перевірити, чи навчилася мережа 
 	//узагальнити інформацію з навчання
-	//так, для навчання визначення координатної чверті, ми брали випадкові числа від -10 до 10, 
+	//так, для навчання ми брали випадкові числа від -10 до 10, 
 	//а для перевірки навченості беремо числа від -1000 до 1000
-	let testingData=[];
+	//Блок 5. Підготовка тестових даних
+	var testingData=[];
 	for (let i=0; i<10000; i++){
 		let x = Math.random()*2000-1000
 		let y = Math.random()*2000-1000
@@ -95,7 +97,8 @@ window.onload=function(){
 
 		testingData.push(ob)
 	}
-
+	//Подаємо тестові дані на вхід мережі і визначаємо, чи є найбільш активованим "правильний" нейрон
+	//Блок 6. Перевірка наченості нейромережі
 	let numCorrectAnswers=0;
 	let numErrors=0;
 	for (let i=0; i<testingData.length; i++){
@@ -113,6 +116,7 @@ window.onload=function(){
 			numErrors++
 		}
 	}
+	//в результаті показуємо процент правилдьних відповідей
 	console.log("correct percentage:",numCorrectAnswers/(numCorrectAnswers+numErrors))
 	
 }
