@@ -59,7 +59,7 @@ window.onload=function(){
 
 		learningData.push(ob)
 	}
-
+	window.learningData=learningData
 	//тепер проганяємо цю навчальну вибірку по нейромережі
 	//Блок 4. Навчання нейромережі  
 	for (let i=0; i<learningData.length; i++){
@@ -97,6 +97,7 @@ window.onload=function(){
 
 		testingData.push(ob)
 	}
+	window.testingData=testingData
 	//Подаємо тестові дані на вхід мережі і визначаємо, чи є найбільш активованим "правильний" нейрон
 	//Блок 6. Перевірка наченості нейромережі
 	let numCorrectAnswers=0;

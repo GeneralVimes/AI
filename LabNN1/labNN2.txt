@@ -19,10 +19,10 @@
 
 		let x = input_arr[0]
 		let y = input_arr[1]
-		if (x>=y+0.05*Math.abs(y)){
+		if (x>y+0.05*Math.abs(y)){
 			return 0
 		}else{
-			if (x<=y-0.05*Math.abs(y)){
+			if (x<y-0.05*Math.abs(y)){
 				return 2
 			}else{
 				return 1
