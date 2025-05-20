@@ -3,6 +3,7 @@ class GameWorld{
 		this.grp = new Phaser.GameObjects.Container(window.main,0,0)
 		window.main.add.existing(this.grp)
 
+		this.carnivoresBonus=2
 		this.isThorus=false
 		this.isVisualizing = true
 		this.gameSpeed=1
@@ -288,7 +289,7 @@ class GameWorld{
 									energyGain+=cr2.energy*cr2.plantEnergyPercent
 								}
 								if (cr.canEatAnimals){
-									energyGain+=10*cr2.energy*(1-cr2.plantEnergyPercent)
+									energyGain+=this.carnivoresBonus*cr2.energy*(1-cr2.plantEnergyPercent)
 								}
 
 								this.removeCreature(cr2)
@@ -308,7 +309,7 @@ class GameWorld{
 									cr2.energy+=en
 								}
 								if (cr2.canEatAnimals){
-									let en = 10*cr.energy*(1-cr.plantEnergyPercent)
+									let en = this.carnivoresBonus*cr.energy*(1-cr.plantEnergyPercent)
 									cr2.plantEnergyPercent = (cr2.plantEnergyPercent*cr2.energy)/(cr2.energy+en)
 									cr2.energy+=en
 								}
