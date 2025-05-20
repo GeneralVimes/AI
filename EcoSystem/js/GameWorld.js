@@ -3,7 +3,7 @@ class GameWorld{
 		this.grp = new Phaser.GameObjects.Container(window.main,0,0)
 		window.main.add.existing(this.grp)
 
-		this.carnivoresBonus=2
+		this.carnivoresBonus=1
 		this.isThorus=false
 		this.isVisualizing = true
 		this.gameSpeed=1
