@@ -8,7 +8,7 @@ class GameWorld{
 		this.gameSpeed=1
 		this.numPlants = 10000
 		this.numHerbivores = 100
-		this.numPredators = 0
+		this.numPredators = 100
 		this.plantDNA = {
 			color:{r:0, g:255,b:0},
 			abilities:{
@@ -49,7 +49,7 @@ class GameWorld{
 				canAttack:true,
 				canDefend:true		
 			},
-			maxEnergy:40,
+			maxEnergy:400,
 			maxHP:100,
 			attack:50,
 			defense:30
@@ -288,7 +288,7 @@ class GameWorld{
 									energyGain+=cr2.energy*cr2.plantEnergyPercent
 								}
 								if (cr.canEatAnimals){
-									energyGain+=cr2.energy*(1-cr2.plantEnergyPercent)
+									energyGain+=10*cr2.energy*(1-cr2.plantEnergyPercent)
 								}
 
 								this.removeCreature(cr2)
@@ -308,7 +308,7 @@ class GameWorld{
 									cr2.energy+=en
 								}
 								if (cr2.canEatAnimals){
-									let en = cr.energy*(1-cr.plantEnergyPercent)
+									let en = 10*cr.energy*(1-cr.plantEnergyPercent)
 									cr2.plantEnergyPercent = (cr2.plantEnergyPercent*cr2.energy)/(cr2.energy+en)
 									cr2.energy+=en
 								}
