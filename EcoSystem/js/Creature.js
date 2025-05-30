@@ -76,6 +76,8 @@ class Creature {
 
 		this.lastMoveDir=0;
 		this.lastMoveMode=0;
+
+		this.speciesId=-1;//до якого виду належить (для репортингу)
 	}
 
 	createVisual(){

@@ -6,6 +6,7 @@ class GameWorld{
 		this.carnivoresBonus=1
 		this.isThorus=false
 		this.isVisualizing = true
+		this.numFullCycles=0;
 		this.gameSpeed=1
 		this.numPlants = 10000
 		this.numHerbivores = 100
@@ -122,7 +123,7 @@ class GameWorld{
 			let cx = Math.floor(Math.random()*this.gridWidth);
 			let cy = Math.floor(Math.random()*this.gridHeight);
 			if (!this.fieldCreatures[cx][cy]){
-				this.createCreature(cx,cy,this.plantDNA,0)
+				this.createCreature(cx,cy,this.plantDNA,0).speciesId=0
 			}
 		}
 
@@ -130,7 +131,7 @@ class GameWorld{
 			let cx = Math.floor(Math.random()*this.gridWidth);
 			let cy = Math.floor(Math.random()*this.gridHeight);
 			if (!this.fieldCreatures[cx][cy]){
-				this.createCreature(cx,cy,this.herbivoreDNA,0)
+				this.createCreature(cx,cy,this.herbivoreDNA,0).speciesId=1
 			}
 		}
 
@@ -138,11 +139,13 @@ class GameWorld{
 			let cx = Math.floor(Math.random()*this.gridWidth);
 			let cy = Math.floor(Math.random()*this.gridHeight);
 			if (!this.fieldCreatures[cx][cy]){
-				this.createCreature(cx,cy,this.predatorDNA,0)
+				this.createCreature(cx,cy,this.predatorDNA,0).speciesId=2
 			}
 		}
 
 		this.nextCreatureId2Move=0;
+
+		this.statshandler = new StatsHandler(this)
 	}
 
 	setVisualizing(b){
@@ -174,6 +177,7 @@ class GameWorld{
 	makeStep(){
 		if (this.nextCreatureId2Move>=this.creatures.length){
 			this.nextCreatureId2Move=0;
+			this.numFullCycles+=1;
 		}else{
 			let cr = this.creatures[this.nextCreatureId2Move]
 			if (cr.mustBFullyRemoved){//вважаємо, що з поля та екрану її вже прибрали
@@ -372,6 +376,8 @@ class GameWorld{
 					cr3.energy = perc*cr.energy;
 					cr3.plantEnergyPercent = cr.plantEnergyPercent
 					cr.energy = (1-perc)*cr.energy;
+
+					cr3.speciesId = cr.speciesId
 				}
 			}
 
@@ -512,6 +518,7 @@ class GameWorld{
 		for (let i=0; i<len; i++){
 			this.makeStep()
 		}
+		this.statshandler.checkReporting()
 	}
 
 	handleMove(pointer, objectsClicked){
@@ -603,4 +610,39 @@ class GameWorld{
 	
 	}
 
+}
+
+
+class StatsHandler{
+	constructor(w){
+		this.myWorld=w;
+		this.reportingStep = 1000
+		this.lastWorldsCycles=this.myWorld.numFullCycles;
+
+		this.fullReportingAr=[]
+	}
+	checkReporting(){
+		if (this.myWorld.numFullCycles-this.lastWorldsCycles>=this.reportingStep){
+			this.doReporting()
+			this.lastWorldsCycles=this.myWorld.numFullCycles		
+		}
+	}
+	doReporting(){
+		console.log("reporting")
+
+		let ar={}
+		for (let i=0; i<this.myWorld.creatures.length; i++){
+			let cr = this.myWorld.creatures[i]
+			if (cr.speciesId in ar){
+				ar[cr.speciesId]++
+			}else{
+				ar[cr.speciesId]=1
+			}
+		}
+
+		this.fullReportingAr.push(ar)
+	}
+	showFullReports(){
+		console.table(this.fullReportingAr)
+	}
 }
