@@ -580,10 +580,22 @@ class GameWorld{
 	handleWheel(evt){
 		// console.log("wheel", evt)
 		if (evt.deltaY<0){
-			this.grp.scale = this.grp.scaleX*0.95
+			let cx0 = (window.innerWidth/2 -this.grp.x) /this.grp.scale
+			let cy0 = (window.innerHeight/2-this.grp.y)/this.grp.scale
+			this.grp.scale = this.grp.scaleX*0.95			
+			let cx1 = (window.innerWidth/2 -this.grp.x) /this.grp.scale
+			let cy1 = (window.innerHeight/2-this.grp.y)/this.grp.scale
+			this.grp.x+=(cx1-cx0)*this.grp.scale
+			this.grp.y+=(cy1-cy0)*this.grp.scale
 		}
 		if (evt.deltaY>0){
+			let cx0 = (window.innerWidth/2 -this.grp.x) /this.grp.scale
+			let cy0 = (window.innerHeight/2-this.grp.y)/this.grp.scale
 			this.grp.scale = this.grp.scaleX*1.05
+			let cx1 = (window.innerWidth/2 -this.grp.x) /this.grp.scale
+			let cy1 = (window.innerHeight/2-this.grp.y)/this.grp.scale
+			this.grp.x+=(cx1-cx0)*this.grp.scale
+			this.grp.y+=(cy1-cy0)*this.grp.scale			
 		}
 	}
 
