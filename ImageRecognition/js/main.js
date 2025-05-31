@@ -43,7 +43,6 @@ window.onload=function(){
 }
 window.network = new NeuroNet()
 window.network.createIntroLayer(28*28);
-// window.network.createLayer(30);
 window.network.createLayer(300,"relu");
 window.network.createLayer(10,"softmax");
 
@@ -77,8 +76,8 @@ function loadNextImage(){
 	current_digit = Math.floor(Math.random()*10);
 	current_image_id = Math.floor(Math.random()*training_files_nums[current_digit]);
 
-	// let str="mnist/training/"+current_digit+"/"+"train_"+current_digit+"_"+(current_image_id+1)+".png"
-	let str="mnist/testing/"+current_digit+"/"+"test_"+current_digit+"_"+(current_image_id+1)+".png"
+	let str="mnist/training/"+current_digit+"/"+"train_"+current_digit+"_"+(current_image_id+1)+".png"
+	// let str="mnist/testing/"+current_digit+"/"+"test_"+current_digit+"_"+(current_image_id+1)+".png"
 	image.src = str;
 	trainingRound++;
 }
