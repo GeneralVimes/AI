@@ -469,6 +469,14 @@ class  NeuroNet{
 			}
 		}
 	}	
+
+	exportTopologyType(){
+		let res=""+this.introLayer.length
+		for (let i=0; i<this.layers.length;i++){
+			res+="_"+this.layers[i].length
+		}
+		return res;
+	}
 }
 
 function convertNtoBits(N, len=7){

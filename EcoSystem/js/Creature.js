@@ -121,6 +121,71 @@ class Creature {
 			dnaOb.color[clCode] = Math.max(0,Math.min(255,dnaOb.color[clCode]))
 
 			if (dnaOb.network){
+				//розбити внутрішній леєр на 2
+				//звести 2 внутрішніх леєри в 1
+				//додатии нейрон на внутрішній леєр
+				//прибрати нейрон з внутрішнього леєра
+
+				let neuroMutId = Math.floor(Math.random()*5)
+				switch (neuroMutId){
+					case 0:{
+						if(dnaOb.network.layers.length>=2){
+							let lyrId = Math.floor(Math.random()*(dnaOb.network.layers.length-1))
+							let lyr=dnaOb.network.layers[lyrId]
+							if (lyr.length>=2){
+								let divId=1+Math.floor(Math.random()*(lyr.length-2))
+								let subLyr = lyr.slice(divId)
+								lyr.length = divId
+								dnaOb.network.layers.splice(lyrId,0,subLyr)							
+							}							
+						}
+
+						break;
+					}
+					case 1:{
+						if(dnaOb.network.layers.length>=3){
+							let lyrId = Math.floor(Math.random()*(dnaOb.network.layers.length-2))
+							let lyr=dnaOb.network.layers[lyrId]						
+							let lyr2=dnaOb.network.layers[lyrId+1]
+							let lyr3 = lyr.concat(lyr2)		
+							dnaOb.network.layers[lyrId]	= lyr3	
+							dnaOb.network.layers.splice(lyrId+1,1)							
+						}
+
+					}
+					case 2:{
+						if(dnaOb.network.layers.length>=2){
+							let lyrId = Math.floor(Math.random()*(dnaOb.network.layers.length-1))
+							let lyr=dnaOb.network.layers[lyrId]
+							lyr.push(
+								{
+									bias:Math.random()*2-1,
+									function:"sigmoid",
+									weights:[Math.random()*2-1]
+								}
+							)							
+						}
+
+						break;
+					}
+					case 3:{
+						if(dnaOb.network.layers.length>=2){
+							let lyrId = Math.floor(Math.random()*(dnaOb.network.layers.length-1))
+							let lyr=dnaOb.network.layers[lyrId]
+							let lyr2=dnaOb.network.layers[lyrId+1]
+							if (lyr.length>1){
+								let nrId=Math.floor(Math.random()*(lyr.length))
+								for (let i=0; i<lyr2.length; i++){
+									lyr2[i].weights.splice(nrId,1)
+								}
+								lyr.splice(nrId,1)
+							}							
+						}
+
+					}
+				}
+
+
 				for (let i=0; i<dnaOb.network.layers.length; i++){
 					for (let j=0; j<dnaOb.network.layers[i].length; j++){
 						let ob = dnaOb.network.layers[i][j]
