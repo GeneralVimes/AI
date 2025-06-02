@@ -136,7 +136,7 @@ class Creature {
 								let divId=1+Math.floor(Math.random()*(lyr.length-2))
 								let subLyr = lyr.slice(divId)
 								lyr.length = divId
-								dnaOb.network.layers.splice(lyrId,0,subLyr)							
+								dnaOb.network.layers.splice(lyrId-1,0,subLyr)							
 							}							
 						}
 
@@ -147,9 +147,9 @@ class Creature {
 							let lyrId = Math.floor(Math.random()*(dnaOb.network.layers.length-2))
 							let lyr=dnaOb.network.layers[lyrId]						
 							let lyr2=dnaOb.network.layers[lyrId+1]
-							let lyr3 = lyr.concat(lyr2)		
-							dnaOb.network.layers[lyrId]	= lyr3	
-							dnaOb.network.layers.splice(lyrId+1,1)							
+							let lyr3 = lyr2.concat(lyr)		
+							dnaOb.network.layers[lyrId+1]	= lyr3	
+							dnaOb.network.layers.splice(lyrId,1)							
 						}
 
 					}
@@ -161,7 +161,7 @@ class Creature {
 								{
 									bias:Math.random()*2-1,
 									function:"sigmoid",
-									weights:[Math.random()*2-1]
+									weights:[(Math.random()*2-1)/lyr.length]
 								}
 							)							
 						}

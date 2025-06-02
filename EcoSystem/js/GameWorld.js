@@ -632,11 +632,11 @@ class StatsHandler{
 
 		let ar={}
 		for (let i=0; i<this.myWorld.creatures.length; i++){
-			let cr = this.myWorld.creatures[i]
-			if (cr.speciesId in ar){
-				ar[cr.speciesId]++
+			let val = this.myWorld.creatures[i].speciesId+""
+			if (val in ar){
+				ar[val]++
 			}else{
-				ar[cr.speciesId]=1
+				ar[val]=1
 			}
 		}
 
