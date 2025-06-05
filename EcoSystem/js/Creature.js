@@ -116,9 +116,12 @@ class Creature {
 
 	mutateDNAOb(dnaOb, mutProb=0.1){
 		if (Math.random()<mutProb){
-			let clCode=["r", "g", "b"][Math.floor(Math.random()*3)]
-			dnaOb.color[clCode] = Math.floor(dnaOb.color[clCode]+10-Math.random()*20)
-			dnaOb.color[clCode] = Math.max(0,Math.min(255,dnaOb.color[clCode]))
+			if (this.myWorld.allowColorMutation){
+				let clCode=["r", "g", "b"][Math.floor(Math.random()*3)]
+				dnaOb.color[clCode] = Math.floor(dnaOb.color[clCode]+10-Math.random()*20)
+				dnaOb.color[clCode] = Math.max(0,Math.min(255,dnaOb.color[clCode]))				
+			}
+
 
 			if (dnaOb.network){
 				//розбити внутрішній леєр на 2

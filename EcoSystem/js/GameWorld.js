@@ -10,7 +10,11 @@ class GameWorld{
 		this.gameSpeed=1
 		this.numPlants = 10000
 		this.numHerbivores = 100
-		this.numPredators = 100
+		this.numPredators = 0
+
+		this.allowColorMutation = true
+		this.maxNumPlantFreeNeighbours2Grow = 4
+		
 		this.plantDNA = {
 			color:{r:0, g:255,b:0},
 			abilities:{
@@ -229,7 +233,8 @@ class GameWorld{
 
 		if (cr.canGetEnergyFromLight){
 			let numFreeCells = this.calculateFreeCellsAround(cr.cell_x, cr.cell_y)
-			lightEnergyGain+=numFreeCells/4*0.001;
+			let colorCoef = Math.max(cr.colorOb.r, cr.colorOb.g, cr.colorOb.b)/255
+			lightEnergyGain+=numFreeCells/this.maxNumPlantFreeNeighbours2Grow*0.001*colorCoef;
 		}
 
 		energySpend+=0.001
@@ -633,6 +638,9 @@ class StatsHandler{
 		let ar={}
 		for (let i=0; i<this.myWorld.creatures.length; i++){
 			let val = this.myWorld.creatures[i].speciesId+""
+			//if (val!="0"){
+				val+="|"+this.myWorld.creatures[i].neuronet.exportTopologyType()
+			//}
 			if (val in ar){
 				ar[val]++
 			}else{
