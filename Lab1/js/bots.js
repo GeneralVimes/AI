@@ -7,7 +7,7 @@ class Bot{
 	makeMoveForSituation(gameDataOb){
 		return {}
 	}
-	//функції бота, що викликаються грою та дають змогу боту навчитися
+	//bot functions that are called by the game and allow the bot to learn
 	getInformedOfGameStart(rulesOb){
 		this.currentGameRulesObject=rulesOb
 	}
@@ -19,7 +19,7 @@ class Bot{
 	getInformedOfDefeat(){
 	
 	}
-	//службова функція для визначення випадкового числа
+	//utility function for determining a random number
 	randomNumberFromToIncl(a,b){
 		return a+Math.floor(Math.random()*(b-a+1));
 	}
@@ -27,14 +27,14 @@ class Bot{
 
 class BachetBot1 extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//бере 1 завжди
+	makeMoveForSituation(gameDataOb){//always takes 1
 		return {n:1}
 	}		
 }
 
 class BachetBotRandom extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//бере 1, або 2 або 3 
+	makeMoveForSituation(gameDataOb){//takes 1, 2, or 3 at random
 		return {n:1+Math.floor(Math.random()*3)}
 	}	
 }
@@ -42,8 +42,8 @@ class BachetBotRandom extends Bot{
 
 class myBot extends Bot{
 	makeMoveForSituation(gameDataOb){//
-		//gameDataOb.N - поточне число камінців у купі
+		//gameDataOb.N - the current number of stones in the pile
 		
-		// return {n:_якесь число яке бот має взяти з купи___}
+		// return {n:__quantity of stones which the bot will attempt to take from the pile___}
 	}	
 }
