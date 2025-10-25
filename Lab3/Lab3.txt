@@ -1,107 +1,108 @@
-**Інструкції до виконання лабораторної роботи "Аналіз графу ігрових позицій"**
-У даній лабораторній роботі ми ознайомимося з ботом, який виконує аналіз всіх ігрових позицій, починаючи з позиції, якою завершується гра
+**Instructions for the laboratory work "Analysis of the Game State Graph"**
+In this work, we will examine the bot that performs an analysis of all game positions, starting from the position that ends the game.
 
-**Крок 1**
-Відкрийте папку Lab3. Запустіть файл index.html у браузері та відкрийте консоль браузера.
-На старті роботи скрипта main.js створюється ігровий світ для гри Баше, у якій допускається брати 1, 2 чи 3 камінці та виграє той, хто забирає останній предмет.
+**Step 1**
+Open the Lab3 folder. Launch the index.html file in a browser and open the browser console.
+At the start of the main.js script, a game world for Bachet's Game is created, in which players are allowed to take 1, 2, or 3 stones, and the one who takes the last stone wins.
 
-У файлі bots.js є бот UniversalBot. Він на початку партії будує виграшну стратегію, і протягом партії слідує неї
-Влаштуйте турнір між ним, BachetBot123Best (який має жорстко закодовану стратегію для даних правил гри) та BachetBotRandomSmart (який робить випадковий хід)
+In the bots.js file, there is a UniversalBot. At the beginning of a game, it builds a winning strategy and follows it throughout the game.
+Arrange a tournament between it, BachetBot123Best (which has a hard-coded strategy for these game rules), and BachetBotRandomSmart (which makes a random move).
 window.world.startTournamentBetweenBots([new UniversalBot("Universal"), new BachetBot123Best("Best"), new BachetBotRandomSmart("RND")], 10000, 2, false)
 
-Впевніться, що UniversalBot грає на рівні з BachetBot123Best та вони обидва повністю обігрують BachetBotRandomSmart
-Запишіть результати цього турніру
-**Крок 2**
-Модифікуємо правила гри, дозволивши брати 1, 2, 3 або 4 камінці
+Confirm that UniversalBot plays on par with BachetBot123Best and that they both completely defeat BachetBotRandomSmart.
+Record the results of this tournament.
+
+**Step 2**
+Let's modify the game rules to allow taking 1, 2, 3, or 4 stones.
 window.world.allowedMoves=[1,2,3,4]
 
-І знов запустіть такий же турнір. Запишіть його результати. Як ви їх поясните (чому боти зіграли саме з таким рахунком)?
+And run the same tournament again. Record its results. How would you explain them (why did the bots play with that specific score)?
 
-**Крок 3**
-BachetBotRandomSmart робить випадкові ходи тільки з діапазону 1, 2, 3. Він також не знає про те, що правила гри можуть змінитися
-Створіть бота UniversalRandomBot, які буде робити ходи, що не порушують правил, але брати їх з правил поточної гри
-Функція ходу для цього бота матиме вигляд:
+**Step 3**
+BachetBotRandomSmart only makes random moves from the range of 1, 2, 3. It is also unaware that the game rules can change.
+Create a bot, UniversalRandomBot, that will make moves that do not violate the rules, but takes them from the current game's rules.
+The move function for this bot will look like this:
 
-	makeMoveForSituation(gameDataOb){
-		var selectedMoveVal = -1;
-		//перебираємо всі дозволені правилами ходи та обираємо випадковий
-		for (var i=0; i<this.currentGameRulesObject.allowedMoves.length; i++){
-			var moveVal = this.currentGameRulesObject.allowedMoves[i];
-			var newPos = gameDataOb.N-moveVal;	
-			if (newPos>=0){
-				if (selectedMoveVal==-1 || Math.random()<1/(i+1)){
-					selectedMoveVal = moveVal;
-				}
-			}
-		}
-		return {n:selectedMoveVal}
-	}
+makeMoveForSituation(gameDataOb){
+    var selectedMoveVal = -1;
+    //iterate through all allowed moves and choose a random one
+    for (var i=0; i<this.currentGameRulesObject.allowedMoves.length; i++){
+        var moveVal = this.currentGameRulesObject.allowedMoves[i];
+        var newPos = gameDataOb.N-moveVal;	
+        if (newPos>=0){
+            if (selectedMoveVal==-1 || Math.random()<1/(i+1)){
+                selectedMoveVal = moveVal;
+            }
+        }
+    }
+    return {n:selectedMoveVal}
+}
 
 
-Проведіть турнір для 4х ботів спочатку для стандартних правил гри
+Run a tournament for the 4 bots, first with the standard game rules.
 window.world.startTournamentBetweenBots([new UniversalBot("Universal"), new BachetBot123Best("Best"), new BachetBotRandomSmart("RND"), new UniversalRandomBot("URND")], 10000, 2, false)
-А потім - для правил, за якими дозволено брати 1,2,3 або 4
+And then for the rules where taking 1, 2, 3, or 4 is allowed.
 
-Запишіть результати обох турнірів та поясніть їх
+Record the results of both tournaments and explain them.
 
-**Крок 4**
-UniversalBot на даний момент прораховує виграшні та програшні позиції тільки для умов, коли той, хто забирає останній камінь, перемагає. 
-Перевірте, як він гратиме якщо у правилах встановити 
+**Step 4**
+Currently, UniversalBot calculates winning and losing positions only for conditions where the player who takes the last stone wins.
+Check how it will play if you set the following in the rules:
 window.world.isLastPlayerWinner=false
 
-І знов проведіть турнір чотирьох ботів.
+And run the tournament of four bots again.
 
-Запишіть його результати. 
+Record its results.
 
-Модифікуйте код UniversalBot так, щоб він правильно оцінював, чи є позиція виграшною чи програшною і для правил гри, коли останній хід веде до програшу
-Подумайте, як це зробити
+Modify the UniversalBot code so that it correctly evaluates whether a position is winning or losing even for game rules where the last move leads to a loss.
+Think about how to do this.
 
-Зробивши, запустіть попередній турнір на правилах, коли можна брати 1, 2, 3, 4 камінці, а останній хід веде до програшу
-Запишіть результати цього турніру
+Once done, run the previous tournament with the rules where you can take 1, 2, 3, 4 stones, and the last move leads to a loss.
+Record the results of this tournament.
 
-**Крок 5**
-Результати аналізу позицій, який зробив UniversalBot, можна побачити у консолі
-Для цього у його функції getInformedOfGameStart розкоментуйте рядки 
-console.log("аналіз позицій")
+**Step 5**
+The results of the position analysis done by UniversalBot can be seen in the console.
+To do this, in its getInformedOfGameStart function, uncomment the lines:
+console.log("position analysis")
 console.log(this.analysisOfpositions)
-Щоб побачити, як бот UniversalBot визначає виграшні та програшні позиції, проведіть  за стандартними правилами турнір, що складається з однієї партії між UniversalBot та будь-яким іншим ботом
-Випишіть значення масиву проаналізованих позицій для перших 21й позицій у таблицю:
+To see how UniversalBot determines winning and losing positions, run a single-game tournament under standard rules between UniversalBot and any other bot.
+Write down the values of the analyzed positions array for the first 21 positions in a table:
 
-N	Тип позиції
-0	П
-1	В
+N	Position Type
+0	L
+1	W
 .....
 
-У третій колонці визначте, який хід буде виграшним
+In a third column, determine what the winning move would be.
 
-**Крок 6**
-Подивіться, як UniversalBot аналізуватиме наступні ігри:
-можна брати 1, 2, 3 і той, хто забирає останній камін програє
-можна брати 1, 2, 3, 4 і той, хто забирає останній камінь виграє
-можна брати 1, 3, 4 і той, хто забирає останній камінь виграє
+**Step 6**
+See how UniversalBot will analyze the following games:
+*   You can take 1, 2, 3, and the one who takes the last stone loses.
+*   You can take 1, 2, 3, 4, and the one who takes the last stone wins.
+*   You can take 1, 3, 4, and the one who takes the last stone wins.
 
-Для кожної гри сформулюйте узагальнююче правило - як визначити виграшний хід з позиції?
+For each game, formulate a general rule - how to determine the winning move from a position?
 
-**Крок 7**
-Індивідуальне завдання (обирається за номером K у журналі)
-Подивіться, як UniversalBot аналізуватиме гру, у якій можна брати K%5+1, (2*K)%7+2, (3*K%11)+3 камінців і той, хто робить останній хід виграє (якщо K парне) і програє якщо K непарне
-Сформулюйте узагальнююче правило визначення виграшних ходів для цієї гри
+**Step 7**
+Individual task (chosen by your number K in the class register).
+See how UniversalBot will analyze a game where you can take K%5+1, (2*K)%7+2, and (3*K%11)+3 stones, and the one who makes the last move wins (if K is even) and loses if K is odd.
+Formulate a general rule for determining winning moves for this game.
 
-**Крок 8**
-Зробіть бота, який буде звертатися за ходом до гравця
-Назвіть його HumanBot
-Його функція ходу виглядатиме так:
+**Step 8**
+Create a bot that will ask the player for a move.
+Name it HumanBot.
+Its move function will look like this:
 
-	makeMoveForSituation(gameDataOb){
-		var s = "Bot moves: "+this.myName+"\n"
-		s+="Current situation: "+gameDataOb.N+"\n";
-		s+="You can take: "+this.currentGameRulesObject.allowedMoves+"\n"
+makeMoveForSituation(gameDataOb){
+    var s = "Bot moves: "+this.myName+"\n"
+    s+="Current situation: "+gameDataOb.N+"\n";
+    s+="You can take: "+this.currentGameRulesObject.allowedMoves+"\n"
 
-		var selectedMoveVal = prompt(s)*1;
-		
-		return {n:selectedMoveVal}
-	}
+    var selectedMoveVal = prompt(s)*1;
+    
+    return {n:selectedMoveVal}
+}
 
-Додайте також функції, які будуть інформувати гравця-людину про виграш чи програш
+Also, add functions that will inform the human player about a win or loss.
 
-Проведіть турнір з однієї гри між HumanBot та UniversalRandomBot. Чи зможете ви виграти цю гру, користуючися виведеними раніше правилами?
+Run a single-game tournament between HumanBot and UniversalRandomBot. Can you win this game using the rules you derived earlier?

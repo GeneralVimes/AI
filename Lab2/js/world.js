@@ -485,7 +485,7 @@ class BachetWorld extends World{
 	buildCurrentRulesObject(){
 		return {
 			allowedMoves:[1,2,3],
-			isLastMoveWinner:isLastPlayerWinner,
+			isLastMoveWinner:true,
 			numPlayers:this.bots.length
 		}
 	}
