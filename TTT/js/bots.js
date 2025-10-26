@@ -7,7 +7,7 @@ class Bot{
 	makeMoveForSituation(gameDataOb){
 		return {}
 	}
-	//функції бота, що викликаються грою та дають змогу боту навчитися
+	//bot functions that are called by the game and allow the bot to learn
 	getInformedOfGameStart(rulesOb){
 		this.currentGameRulesObject=rulesOb
 	}
@@ -19,13 +19,13 @@ class Bot{
 	getInformedOfDefeat(){
 	
 	}
-	//службова функція для визначення випадкового числа
+	//utility function for determining a random number
 	randomNumberFromToIncl(a,b){
 		return a+Math.floor(Math.random()*(b-a+1));
 	}
 }
 
-//бот для гравця-людини (показує повідомлення про поточну ситуацію на полі та питає номер клітинки для ходу)
+//bot for a human player (shows a message with the current board situation and asks for the cell number for the move)
 class TTTHumanBot extends Bot{
 	makeMoveForSituation(gameDataOb){//
 		var s = "Game Situation:\n"
@@ -100,18 +100,18 @@ class TTTLearnerBot extends Bot{
 		return {id:moveId}						
 
 	}
-	//функції бота, що викликаються грою та дають змогу боту навчитися
+	//bot functions that are called by the game and allow the bot to learn
 	getInformedOfGameStart(rulesOb){
 		super.getInformedOfGameStart(rulesOb)
 		this.myMoves.length=0;
 	}
 
 	getInformedOfVictory(){
-		//якщо ми перемогли, ми маємо пройти по зроблених ходах
-		//та більшити імовірніть тих ходів, що привели нас до виграшу
+		//if we won, we must go through the moves made
+		//and increase the probability of those moves that led us to victory
 		for (let i=0; i<this.myMoves.length; i++){
 			let moveOb = this.myMoves[i];
-			//інформація про зроблений хід має вигляд об'єкту 
+			//information about the move made has the form of an object 
 			//{pos:posCode, id:moveId}
 			let memAr = TTTLearnerBot.memory[moveOb.pos].probs
 			memAr[moveOb.id]+=1;
@@ -120,8 +120,8 @@ class TTTLearnerBot extends Bot{
 			for (let i=0; i<memAr.length; i++){
 				s+=memAr[i];
 			}
-			//щоб числа у пам'яті не зростали сильно, ми, при досягненні кількості 1000 фішок
-			//поділимо всі фишки навпіл
+			//to prevent the numbers in memory from growing too large, upon reaching a total of 100 tokens
+			//we will divide all tokens in half
 			if (s>=100){
 				for (let i=0; i<memAr.length; i++){
 					memAr[i] = Math.floor(memAr[i]/2)
@@ -131,24 +131,24 @@ class TTTLearnerBot extends Bot{
 	}
 
 	getInformedOfDefeat(){
-		//якщо ми програли, ми маємо пройти по зроблених ходах
-		//та зменшити імовірніть тих ходів, що привели нас до програшу
+		//if we lost, we must go through the moves made
+		//and decrease the probability of those moves that led us to defeat
 		for (let i=0; i<this.myMoves.length; i++){
 			let moveOb = this.myMoves[i];
-			//інформація про зроблений хід має вигляд об'єкту 
+			//information about the move made has the form of an object 
 			//{pos:posCode, id:moveId}
 			let memAr = TTTLearnerBot.memory[moveOb.pos].probs
 			let freeCells = TTTLearnerBot.memory[moveOb.pos].free
-			//зменшувати імовірності можна двома способами
-			//для великих чисел будемо одразу ділити їх навпіл
+			//probabilities can be decreased in two ways
+			//for large numbers, we will immediately divide them in half
 			if(memAr[moveOb.id]>100){
 				memAr[moveOb.id]=Math.floor(memAr[moveOb.id]/2)
-			}else{//а від менших - віднімати одиницю
+			}else{//and from smaller ones - subtract one
 				memAr[moveOb.id]-=1;
 				if (memAr[moveOb.id]<=0){
 					memAr[moveOb.id]=0;
-					//якщо ми забрали останню фішку, а інших фішок загалом менше сотні,
-					//то додамо по 1 фішці кожного виду
+					//if we removed the last token, and the total of other tokens is less than a hundred,
+					//we will add 1 token of each type
 					let s = 0;
 					for (let i=0; i<freeCells.length; i++){
 						let id = freeCells[i]
@@ -165,7 +165,7 @@ class TTTLearnerBot extends Bot{
 		}		
 	}	
 }
-//цей бот робить хід у випадкову вільну клитину
+//this bot makes a move into a random empty cell
 class TTTRandomBot extends Bot{
 	makeMoveForSituation(gameDataOb){
 		var movId=-1;
@@ -181,13 +181,10 @@ class TTTRandomBot extends Bot{
 		return {id:movId}
 	}
 }
-//Зробити ботів для Хрестиків-Нуликів
-//1. Робить хід у найпершу вільну клітинку (дуже просто)
-//2. Робить хід у випадкову вільну клітинку (це зроблено)
-//3. Намагається робити ряд з однакових символів (складніше)
-//4. Намагається робити ряд зі своїх символів, а якщо це неможливо - завадити супернику зробити свій ряд (ще складніше)
+//Create bots for Tic-Tac-Toe
+//1. Makes a move into the very first empty cell (very simple)
+//2. Makes a move into a random empty cell (this is done)
+//3. Tries to make a line of the same symbols (harder)
+//4. Tries to make a line of its own symbols, and if that's not possible - prevents the opponent from making their line (even harder)
 
-//Влаштуйте змагання - турнір з 1 партії між написаним вами ботом та TTTHumanBot, за якого гратимете ви
-
-
-
+//Arrange a competition - a 1-game tournament between the bot you wrote and TTTHumanBot, which you will play as
