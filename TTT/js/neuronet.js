@@ -130,8 +130,8 @@ class Neuron{
 		return val>0?1:0.01
 	}
 
-	//проблема: Math.exp(710)=Infinity
-	//поэтому softmax надо перед использованием подстроить
+	//problem: Math.exp(710)=Infinity
+	//therefore softmax needs to be adjusted before use
 	softMaxActivationFunction(val){
 		let maxZ = 0;
 		let coef=1;

@@ -1,12 +1,12 @@
 class World {
 	constructor(){
-		this.bots=[]//боти для конкретної серії ігор
-		this.allBots=[]//боти для великого турніру. Звідси будуть бартися боти по двоє і запускатися серія ігор
-		this.allBotsResults=[];//бали ботів у великому турнірі, у такому ж порядку, як і їхні номери у списку this.allBots
-		this.tournamentScores={}//асоційований об'єкт: бали ботів у турнірі по їх іменах
-		this.tournamentScoresByBots=new Map()//асоційований об'єкт: бали ботів у турнірі по їх посиланнях
+		this.bots=[]//bots for a specific series of games
+		this.allBots=[]//bots for a grand tournament. Bots will be taken from here in pairs to start a series of games
+		this.allBotsResults=[];//scores of bots in the grand tournament, in the same order as their indices in the this.allBots list
+		this.tournamentScores={}//associative object: bot scores in the tournament by their names
+		this.tournamentScoresByBots=new Map()//associative object: bot scores in the tournament by their references
 	}
-	//службова функція - вибір m чисел з масиву unselected до масиву selected
+	//utility function - selects m numbers from the unselected array into the selected array
 	recursivelySelect(res, m, selected, unselected){
 		if (m==0){
 			res.push(selected);
@@ -40,7 +40,7 @@ class World {
 		return res;
 	}
 
-	//службова функція - перерахувати усі способи вибору m чисел з m
+	//utility function - list all ways to choose m numbers from n
 	listSelectionsOfMFromN(m, n){
 		let res=[];
 		let ar2Select=[];
@@ -52,10 +52,10 @@ class World {
 	}
 	/**
 	 * 
-	 * @param {*} bots // які боти будуть брати участь у великому турнірі
-	 * @param {*} numGames //скільки ігор проводити між кожною підгрупою ботів
-	 * @param {*} numBotsInOneGame //по скільки ботів з загального списку обирати, щоб провести серію ігор
-	 * @param {*} showLog //чи виводити лог
+	 * @param {*} bots // which bots will participate in the grand tournament
+	 * @param {*} numGames //how many games to play between each subgroup of bots
+	 * @param {*} numBotsInOneGame //how many bots to select from the general list to play a series of games
+	 * @param {*} showLog //whether to display the log
 	 */
 	startTournamentBetweenBots(bots, numGames, numBotsInOneGame=2, showLog=false){
 		this.allBots = bots;
@@ -67,10 +67,10 @@ class World {
 			this.tournamentScores[this.allBots[i].myName]=0
 			this.tournamentScoresByBots.set(this.allBots[i],0);
 		}
-		//визначаємо всі способи обрати по numBotsInOneGame серед всіх ботів
+		//determine all ways to choose numBotsInOneGame from all bots
 		let botsIdsInGames = this.listSelectionsOfMFromN(numBotsInOneGame,this.allBots.length);
 		
-		//перемішуємо індивідуальні партії у випадковому порядку
+		//shuffle the individual matches in random order
 		for (let i=0; i<botsIdsInGames.length; i++){
 			for (let j=i+1; j<botsIdsInGames.length; j++){
 				if (Math.random()<0.5){
@@ -81,9 +81,9 @@ class World {
 			}
 		}
 
-		//запускаємо партії між ботами
+		//start the matches between bots
 		for (let k=0; k<numGames; k++){
-			//пробігаємо по всіх можливих групах ботів з загального списку для гри
+			//iterate through all possible groups of bots from the general list for a game
 			for (let i=0; i<botsIdsInGames.length; i++){
 				let usedBotsInThisGame=botsIdsInGames[i];
 				//console.log(usedBotsInThisGame)
@@ -94,14 +94,14 @@ class World {
 				this.startGame(showLog)
 			}			
 		}
-		//виводимо результати турніру
+		//display the tournament results
 		console.log("Bots Tournament results:",this.allBotsResults);
 		console.log("Tournament results:", this.tournamentScores)
 	}
-	//простіший турнір для порівняння поведінки класів ботів
+	//a simpler tournament for comparing the behavior of bot classes
 	startTournament(botsClasses, numGames, showLog=false){
 		this.bots.length=0;
-		//створюємо ботів для турніра
+		//create bots for the tournament
 		for (let i=0; i<botsClasses.length; i++){
 			let b = new botsClasses[i](botsClasses[i].name+"_"+i);
 			this.bots.push(b)
@@ -116,42 +116,42 @@ class World {
 	}
 
 	startGame(showLog=true){
-		//боти вже є
+		//bots already exist
 		this.initNewGamePosition();
 
 		this.randomizeMoveOrder();
 
 		this.informBotsOfGameStart()
 
-		//доки гра не закінчена, робимо ходи
+		//as long as the game is not over, make moves
 		let currentBotId = 0;
-		while(true){//ходи продовжуємо, поки гра триває
-			//будуємо ситуація для показу боту
+		while(true){//we continue making moves while the game lasts
+			//build the situation to show to the bot
 			let ob = this.buildCurrentGameSituation()
 			if (showLog)console.log("Situation ",ob)
-			//який бот зараз ходить
+			//which bot is currently moving
 			if (showLog)console.log("Bot ",currentBotId,this.bots[currentBotId].myName , "moves")
 			let bot = this.bots[currentBotId]
-			//показуємо боту ситуація та отримуємо від нього хід
+			//show the situation to the bot and get a move from it
 			let botMove = bot.makeMoveForSituation(ob)
 			if (showLog)console.log("Bot Move: ",botMove)
-			//якщо хід задовольняє правилам
+			//if the move satisfies the rules
 			if (this.validateMove(botMove)){
-				//виконуємо цей хід
+				//execute this move
 				this.makeBotMove(botMove);
-				//якщо хід привів до завершення гри
+				//if the move led to the end of the game
 				if (this.isGameOver()){
 					if (showLog)console.log("GAME OVER! Calculating points...")
-					//визначаємо, хто виграв, хто програв
+					//determine who won and who lost
 					this.calculateGamePoints(currentBotId)
 					break;
 				}else{
-					//якщо ні, визначаємо наступного гравця, який буде ходити
+					//if not, determine the next player to move
 					currentBotId++;
 					currentBotId%=this.bots.length
 				}
 			}else{
-				//якщо хід не задовольняє правилам, то зупиняємо гру, зарахувавши боту програш
+				//if the move does not satisfy the rules, stop the game, counting it as a loss for the bot
 				if (showLog)console.log("BOT ERROR! Calculating points...")
 				this.stopGameAfterBotError(currentBotId);
 				break;
@@ -162,11 +162,11 @@ class World {
 	initNewGamePosition(){
 	
 	}
-	//задаємо випадкову чергу ходів
+	//set a random move order
 	randomizeMoveOrder(){
 		for (let i=0; i<this.bots.length-1; i++){
-			//пробігаємо по свсіх елементах масиву
-			//та міняємо місцями з випадковим елементом від даного (включаючи) до кінця
+			//iterate through all elements of the array
+			//and swap with a random element from the current one (inclusive) to the end
 			let j = i+Math.floor(Math.random()*(this.bots.length-i))
 			let t = this.bots[i]
 			this.bots[i]=this.bots[j]
@@ -206,7 +206,7 @@ class World {
 			bot.getInformedOfGameStart(currentRulesOb);
 		}
 	}
-	//дати перемогу у грі боту з індексом botId
+	//give victory in the game to the bot with index botId
 	giveVictoryToSingleBot(botId){
 		for (let i=0; i<this.bots.length; i++){
 			let bot = this.bots[i];
@@ -233,7 +233,7 @@ class World {
 			}
 		}
 	}
-	//дати перемогу у грі усім ботам окрім бота з індексом botId
+	//give victory in the game to all bots except the bot with index botId
 	giveDefeatToSingleBot(botId){
 		for (let i=0; i<this.bots.length; i++){
 			let bot = this.bots[i];
@@ -261,11 +261,11 @@ class World {
 		}	
 	}
 
-	//за результатами турніру видаляємо усіх ботів класу botClass, які не потрапили у K кращих
+	//based on tournament results, remove all bots of botClass that are not in the top K
 	keepNoMoreThanKBestBotsOfClass(botClass, K=10){
-		//боти, що не відносяться до класу botClass залишаються
+		//bots that do not belong to botClass remain
 		let otherBots=[]
-		//боти, що відносяться до класу botClass залишаються якщо потрапляють у К кращих
+		//bots belonging to botClass remain if they are in the top K
 		let bots2Keep=[];
 		let botsScores2Keep=[];
 		for (let i=0; i<this.allBots.length; i++){
@@ -447,8 +447,8 @@ class TTTWorld extends World{
 			board:this.board.slice()
 		}
 	}
-	//отримаємо від бота moveOb має бути {id:0..8}
-	//перевіряємо, щоб число було цілим від 0 до 8, і щоб клітинка була вільна
+	//get moveOb from bot, must be {id:0..8}
+	//check that the number is an integer from 0 to 8, and that the cell is free
 	validateMove(moveOb){
 		let res = true;
 		if ("id" in moveOb){
@@ -471,11 +471,11 @@ class TTTWorld extends World{
 
 		return res		
 	}
-	//moveOb має бути {id:0..8}
+	//moveOb must be {id:0..8}
 	makeBotMove(moveOb){
 		let numX = 0;
 		let numO = 0;
-		//разуємо, скільки на дошці хрестиків та нуликів
+		//count how many X's and O's are on the board
 		for (let i=0; i<=8; i++){
 			if (this.board[i]=="X"){
 				numX++
@@ -484,20 +484,20 @@ class TTTWorld extends World{
 				numO++
 			}
 		}
-		//якщо хрестиків однаково з нуліками, це хід хрестика, інакше - хід нулика
+		//if the number of X's is equal to the number of O's, it's X's turn, otherwise - it's O's turn
 		if (numX==numO){
 			this.board[moveOb["id"]]="X"
 		}else{
 			this.board[moveOb["id"]]="O"
 		}
 	}
-	//можуть бути варіанти:
-	//гра іде далі //-1
-	//гра завершилася внічию //0
-	//гра завершилася виграшем останнього гравця //1
-	//гра завершилася програшем останнього гравця //2
+	//possible options:
+	//game continues //-1
+	//game ended in a draw //0
+	//game ended with the last player winning //1
+	//game ended with the last player losing //2
 	defineGameEnding(){
-		//спочатку пошукаємо ряд з однакових символів
+		//first, let's look for a line of identical symbols
 		let possibleStarts=[0,3,6,0,1,2,0,2];
 		let possibleSteps=[1,1,1,3,3,3,4,2];
 		var hasLine = false;
@@ -513,7 +513,7 @@ class TTTWorld extends World{
 				}
 			}
 		}
-		//якщо лінію знайдено
+		//if a line is found
 		if (hasLine){
 			return 1
 		}
@@ -525,52 +525,52 @@ class TTTWorld extends World{
 			}
 		}
 		if (canBeDraw){
-			return 0//нічия
+			return 0//draw
 		}else{
-			return -1//гра продовжується
+			return -1//game continues
 		}
 	}
 
 	startGame(showLog=true){
-		//боти вже є
+		//bots already exist
 		this.initNewGamePosition();
 
 		this.randomizeMoveOrder();
 
 		this.informBotsOfGameStart()
 
-		//доки гра не закінчена, робимо ходи
+		//as long as the game is not over, make moves
 		let currentBotId = 0;
-		while(true){//ходи продовжуємо, поки гра триває
-			//будуємо ситуація для показу боту
+		while(true){//we continue making moves while the game lasts
+			//build the situation to show to the bot
 			let ob = this.buildCurrentGameSituation()
 			if (showLog)console.log("Situation ",ob)
-			//який бот зараз ходить
+			//which bot is currently moving
 			if (showLog)console.log("Bot ",currentBotId,this.bots[currentBotId].myName , "moves")
 			let bot = this.bots[currentBotId]
-			//показуємо боту ситуація та отримуємо від нього хід
+			//show the situation to the bot and get a move from it
 			let botMove = bot.makeMoveForSituation(ob)
 			if (showLog)console.log("Bot Move: ",botMove)
-			//якщо хід задовольняє правилам
+			//if the move satisfies the rules
 			if (this.validateMove(botMove)){
-				//виконуємо цей хід
+				//execute this move
 				this.makeBotMove(botMove);
-				//чи продовжується гра після ходу?
+				//does the game continue after the move?
 				let gameNextDo = this.defineGameEnding()
 				if (gameNextDo==1){
 					if (showLog)console.log("GAME OVER with victory! Calculating points...")
-					//за виграш будемо давати 3 бали
+					//we will give 3 points for a win
 					this.giveVictoryToSingleBot(currentBotId)
 					this.giveVictoryToSingleBot(currentBotId)
 					this.giveVictoryToSingleBot(currentBotId)
 					break;
 				}
-				if (gameNextDo==0){//за нічию даємо обом гравцям по 1 балу
+				if (gameNextDo==0){//for a draw, we give both players 1 point each
 					if (showLog)console.log("GAME OVER with DRAW! Calculating points...")
 					// this.calculateGamePoints(currentBotId,1)
 					// this.calculateGamePoints(1-currentBotId,1)
-					//щоб не писати нову функцію, будемо використовувати ту, 
-					// яка дає бали усім ботам окрім бота -1 (тобто неіснуючого)
+					//to avoid writing a new function, we will use the one
+					//that gives points to all bots except bot -1 (i.e., a non-existent one)
 					this.giveDefeatToSingleBot(-1)
 					break;
 				}
@@ -579,7 +579,7 @@ class TTTWorld extends World{
 					currentBotId%=this.bots.length					
 				}
 			}else{
-				//якщо хід не задовольняє правилам, то зупиняємо гру, зарахувавши боту програш
+				//if the move does not satisfy the rules, stop the game, counting it as a loss for the bot
 				if (showLog)console.log("BOT ERROR! Calculating points...")
 				this.giveDefeatToSingleBot(currentBotId);
 				break;
@@ -588,17 +588,17 @@ class TTTWorld extends World{
 	}		
 }
 
-//що має вміти ігровий світ?
-//влаштовувати турнір між ботами
-//турнір складаєть з кількох ігор
-	//кожна гра складається з:
-	//генерується випадкове початкове число
-	//ініцалізуються боти, їх задається випадкова черга ходу
-	//відповідно черги ходу ботам повідомляється поточна ігрова ситуація 
-	//на яку бот відповідає ходом, який хоче зробити
-	//світ перевіряє, чи підпадає хід під правила гри
-	//якщо так, то хід робиться, змінюється ігрова ситуація та хід переходить до наступного боту
-	//якщо ні то, при некоректному ході зарахувати програш
-	//гра продовжується, доки не настсне умова виграшу однієї за сторін
-//після завершення гри оновлюємо результати ботів у турнірі
-//після завершення турніру видаємо результати
+//what should the game world be able to do?
+//- organize a tournament between bots
+//- a tournament consists of several games
+//	- each game consists of:
+//	- a random initial state is generated
+//	- bots are initialized, a random turn order is set for them
+//	- according to the turn order, bots are informed of the current game situation
+//	- to which the bot responds with the move it wants to make
+//	- the world checks if the move follows the game rules
+//	- if so, the move is made, the game situation changes, and the turn passes to the next bot
+//	- if not, count an incorrect move as a loss
+//	- the game continues until a win condition for one of the sides is met
+//- after the game ends, we update the bot results in the tournament
+//- after the tournament ends, we issue the results

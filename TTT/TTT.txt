@@ -1,55 +1,56 @@
-**Інструкції до виконання лабораторної роботи "Боти для гри Хрестики-нулики"**
-У даній лабораторній роботі ми будемо будувати ботів, які гратимуть у гру "Хрестики-нулики"
+**Instructions for the laboratory work "Bots for the game of Tic-Tac-Toe"**
 
-**Крок 1**
-Відкрийте папку TTT. Запустіть файл index.html у браузері та відкрийте консоль браузера.
-На старті роботи скрипта main.js створюється ігровий світ для гри "Хрестики-нулики"
+In this laboratory work, we will be building bots that play the game of "Tic-Tac-Toe".
 
-У файлі bots.js є бот для людини-гравця TTTHumanBot
-При своєму ході бот показує ігрову ситуацію людині та запитує, у яку комірку треба ставити символ
+**Step 1**
+Open the TTT folder. Launch the index.html file in a browser and open the browser console.
+At the start of the main.js script, a game world for "Tic-Tac-Toe" is created.
 
-Проведіть гру між двома ботами TTTHumanBot
+In the bots.js file, there is a bot for a human player, TTTHumanBot.
+On its turn, the bot shows the game situation to the person and asks which cell to place a symbol in.
+
+Play a game between two TTTHumanBot bots:
 window.world.startTournamentBetweenBots([new TTTHumanBot("A"), new TTTHumanBot("B")],1,2,true)
 
-**Крок 2**
-Серед ботів є TTTRandomBot, який робить хід у випадкову вільну клітинку
-Проведіть гру між TTTHumanBot (за якого гратимете ви) та TTTRandomBot
+**Step 2**
+Among the bots, there is TTTRandomBot, which makes a move into a random empty cell.
+Play a game between TTTHumanBot (which you will be playing as) and TTTRandomBot:
 window.world.startTournamentBetweenBots([new TTTHumanBot("A"), new TTTRandomBot("RND")],1,2,true)
-Запишіть партію, позначаючи поруч з поставленими символами номера ходів
+Record the game, marking the move numbers next to the placed symbols.
 
-**Крок 3**
-Серед ботів є TTTLearnerBot, який навчається, використовуючи методи Q-Learning
-Проведіть 1000 партій між ним та TTTRandomBot
+**Step 3**
+Among the bots, there is TTTLearnerBot, which learns using Q-Learning methods.
+Run 1000 games between it and TTTRandomBot:
 window.world.startTournamentBetweenBots([new TTTLearnerBot("Learn"), new TTTRandomBot("RND")],1000,2,false)
-Потім зіграйте як людина-гравець
+Then, play against it as a human player:
 window.world.startTournamentBetweenBots([new TTTHumanBot("A"), new TTTLearnerBot("Learn")],1,2,true)
-Запишіть партію, позначаючи поруч з поставленими символами номера ходів
+Record the game, marking the move numbers next to the placed symbols.
 
-**Крок 4**
-Розгляньте пам'ять TTTLearnerBot'а
+**Step 4**
+Examine the memory of the TTTLearnerBot:
 TTTLearnerBot.memory
 
-Розгляньте яку-небудь позицію, у якій стоїть 2 хрестика та 1 нулік. Наприклад, таку (якщо вона є у пам'яті бота)
+Consider a position where there are 2 X's and 1 O. For example, this one (if it exists in the bot's memory):
+
 X| | 
 -----
  |O| 
 -----
  | |X
- 
-Для цього введіть:
+To do this, enter:
 TTTLearnerBot.memory["X,_,_,_,O,_,_,_,X"]
 
-Якщо такої позиції у пам'яті не буде, дослідіть яку-небудь іншу
+If such a position is not in memory, investigate another one.
 
-Позначте на ігровій дошки імовірності, з якими TTTLearnerBot обере наступний хід з цієї позиції
+On a game board, mark the probabilities with which TTTLearnerBot will choose the next move from this position.
 
-**Крок 5**
-Проведіть ще 100 000 навчальний партій між TTTRandomBot та TTTLearnerBot
-Як зміниться зміст комірки пам'яті, що відповідає позиції ?
+**Step 5**
+Run another 100,000 training games between TTTRandomBot and TTTLearnerBot.
+How will the content of the memory cell corresponding to the position change?
 
-Чи може вже TTTLearnerBot грати внічию з людиною?
+Can the TTTLearnerBot now play to a draw with a human?
 
-Скільки партій для цьього знадобиться?
+How many games will this take?
 
-**Крок 6**
-Реалізуйте власного бота для гри у хрестики-нулики. Серед усіх ваших ботів ми проведемо турнір на одній з наступних лекцій
+**Step 6**
+Implement your own bot for the game of Tic-Tac-Toe. We will conduct a tournament among all of your bots during one of the upcoming lectures.

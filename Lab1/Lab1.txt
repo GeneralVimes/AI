@@ -1,87 +1,90 @@
-**Інструкції до виконання лабораторної роботи "Програмування ботів для гри Баше"**
-У даній лабораторній роботі ми ознайомимося з середовищем моделювання гри Баше, програмними агентами, які будуть у неї грати, створимо власних програмних агентів та влаштуємо між ними турніри 
+Instructions for the laboratory work "Programming bots for the game of Bashe"
 
-**Крок 1**
-Відкрийте папку Lab1. Запустіть файл index.html у браузері та відкрийте консоль браузера.
-На старті роботи скрипта main.js створюється ігровий світ для гри Баше, у якій допускається брати 1, 2 чи 3 камінці та виграє той, хто забирає останній предмет.
+In this laboratory work, we will get acquainted with the simulation environment for the Bachet's game and the software agents that will play it. We will create our own software agents and arrange tournaments between them.
 
-Запустимо у цей світ двох ботів та проведемо між ними одну гру. 
+Step 1
+Open the Lab1 folder. Launch the index.html file in a browser and open the browser console.
+At the start of the main.js script, a game world for Bashet's game is created, in which players are allowed to take 1, 2, or 3 stones. The player who takes the last stone wins.
 
-У роботі дано два типи ботів: 
-BachetBot1 вміє брати лише 1 камінь кожним ходом
-BachetBotRandom завжди визначає свій хід випадково, числом від 1 до 3
+Let's introduce two bots into this world and have them play one game.
 
-Введіть у консоль команду
+Two types of bots are provided:
+
+BachetBot1 can only take 1 stone per turn.
+
+BachetBotRandom always determines its move randomly, choosing a number from 1 to 3.
+
+Enter the following command into the console:
 window.world.bots = [new BachetBot1("B1"), new BachetBotRandom("RND")]
 
-Так ви створите двох ботів означених типів з іменами В1 та RND
+This will create two bots of the specified types with the names B1 and RND.
 
-Тепер зоб запустити одну гру між цими ботами, введіть команду
+Now, to run a single game between these bots, enter the command:
 window.world.startGame(true)
 
-Ви побачите результат гри цих двох ботів по ходах.
+You will see the turn-by-turn result of the game between these two bots.
 
-**Крок 2**
-Тепер проведемо турнір між цими двома типами ботів турнір, у якій вони удвох зіграють 1000 партій, кожен раз з випадкового числа 
+Step 2
+Now, let's run a tournament between these two types of bots where they will play 1000 games, each starting with a random number of stones.
 window.world.startTournamentBetweenBots([new BachetBot1("B1"), new BachetBotRandom("RND")], 1000, 2, false)
 
-Ви побачите результат турніру у консолі. Запишіть собі, скільки в середньому партій кожен з них виграє
+You will see the tournament results in the console. Take note of the average number of games each bot wins.
 
-**Крок 3**
-Тепер розробимо нового бота, такого, який завжди бере 2 камінці, незважачи ні на що. Код для цього бота пишеться у модулі bots.js
-За зразов оберіть бота, який бере 1 камінець. Назвіть клас цього бота BachetBot2
+Step 3
+Now, let's develop a new bot that always takes 2 stones, no matter what. The code for this bot should be written in the bots.js module.
+Use the bot that takes 1 stone as a template. Name the class for this new bot BachetBot2.
 
-Запустіть турнір для всіх трьох ботів, у якому кожен з кожним буде грати по 1000 партій. Це робиться командою у консолі:
+Run a tournament for all three bots, where each bot will play 1000 games against every other bot. This is done with the following command in the console:
 window.world.startTournamentBetweenBots([new BachetBot1("B1"), new BachetBotRandom("RND"), new BachetBot2("B2")], 1000, 2, false)
 
-Запишіть, які результати ботів у такому турнірі
+Record the results of the bots in this tournament.
 
-**Крок 4**
+Step 4
 
-Давайте зробимо покращену версію бота BachetBot2. Його поточна версія буде намагатися брати 2 камінці навіть у тих ситуаціях, коли у купі залишається 1 камінь. І тому йому часто зараховується програш саме за порущення правил гри.
-Розробіть бота BachetBot2Smart. Задайте йоому наступну поведінку: якщо у купі рівно 1 камінець, він буде брати цей 1 камінець, а в усіх інших випадках буде брати 2 камінці
+Let's create an improved version of BachetBot2. Its current version will try to take 2 stones even when there is only 1 stone left in the pile. This often results in a loss due to violating the game rules.
+Develop a bot named BachetBot2Smart. Give it the following behavior: if there is exactly 1 stone in the pile, it will take that 1 stone; in all other cases, it will take 2 stones.
 
-Поведінкою ботів керує функція makeMoveForSituation(gameDataOb)
-У об'єкті gameDataOb у параметрі N він отримує поточну кількість камінців.
+The bot's behavior is controlled by the makeMoveForSituation(gameDataOb) function.
+The gameDataOb object contains the N parameter, which is the current number of stones.
 
-Тому дана функція для бота BachetBot2Smart буде мати вигляд:
+Therefore, the function for the BachetBot2Smart bot will look like this:
 
-	makeMoveForSituation(gameDataOb){
-		if (gameDataOb.N==1){
-			return {n:1}
-		}else{
-			return {n:2}
-		}
-	}
+makeMoveForSituation(gameDataOb){
+    if (gameDataOb.N==1){
+        return {n:1}
+    }else{
+        return {n:2}
+    }
+}
 
-Після того, як додасте бота BachetBot2Smart у файл bots.js запустіть турнір з чотирма типами ботів, виконавши команду у консолі:
+After adding the BachetBot2Smart bot to the bots.js file, run a tournament with all four types of bots by executing this command in the console:
 window.world.startTournamentBetweenBots([new BachetBot1("B1"), new BachetBotRandom("RND"), new BachetBot2("B2"), new BachetBot2Smart("B2Smart")], 1000, 2, false)
 
-**Крок 5**
-Зробимо покращену версію бота, який бере випадкове число камінців. Цому також програш часто зараховується за порушення правил, тому що він, обираючи хід випадково, може намагатися взяти з купи більше камінчів, ніж там є (за хід не за правилами гра зараховує програш)
+Step 5
+Let's make an improved version of the bot that takes a random number of stones. This bot also frequently loses for violating the rules because, by choosing a move randomly, it might try to take more stones from the pile than are available (the game counts an illegal move as a loss).
 
-Створіть бота BachetBotRandomSmart, який буде робити випадкові ходи, якщо камінців 3 або більше, якщо ж на столі 2 камінці, він буде брати випадково 1 чи 2, а якщо ж залишився 1 камінь, то буде просто брати Його
+Create a bot named BachetBotRandomSmart that will make a random move if there are 3 or more stones. If there are 2 stones on the table, it will randomly take 1 or 2, and if only 1 stone remains, it will simply take it.
 
-Додавши цього бота запустіть турнір з усіма п'ятьма типами ботів. Запишіть, який в них вийшов розподіл турнірних місць
+After adding this bot, run a tournament with all five types of bots. Record the final ranking of the bots.
 
-**Крок 6**
-Додайте тепер бота, який реалізовує ідеальну стратегію для гри Баше за даними правилами. Провівши турнір впевніться, що він всуху обігрує всіх решту ботів.
+Step 6
+Now, add a bot that implements the perfect strategy for this version of the game of Bashe. As we found out in the lecture, the perfect strategy is to leave for an opponent a quantity of stones on the pile, which is divisible by 4. After running a tournament, confirm that it soundly defeats all other bots.
 
-**Крок 7**
-Створіть бота, який би грав лише трохи слабше ідеального бота, але сильніше ніж усі решта сильніше ніж усі 5 ботів неї
+Step 7
+Create a bot that plays only slightly weaker than the perfect bot but is stronger than all the other five bots.
 
-**Завдання: Створення ботів для турніру за правилами 1, 3, 4**
-На лекції ми розглянули альтернативний варіант правил гри Баше, у які можна брати з купи лише 1, 3 або 4 камінці і виграє той, хто зробить хід останнім
+Individual task: Creating bots for a tournament with the rules 1, 3, 4
+In the lecture, we discussed an alternative version of the rules for the game of Bashe, where you can only take 1, 3, or 4 stones from the pile, and the player who makes the last move wins.
 
-Для цих правил ми влаштуємо турнір між усіма ботами, які розроблять студенти.
+For these rules, we will organize a tournament among all the bots developed by the students.
 
-Щоб потестувати, як ваш бот вестиме себе на цих правилах, у файлі main.js заокоментуйте рядок
+To test how your bot will behave under these new rules, go to the main.js file, comment out the line:
 window.world = new BachetWorld();
-та розкоментуйте рядок 
+and uncomment the line:
 window.world = new UniversalBachetWorld([1,3,4],true);
 
-Створиться ігровий світ, у якому дозволені ходи: 1, 3, 4 та виграє той, хто забирає останній камінь
+This will create a game world where the allowed moves are 1, 3, and 4, and the player who takes the last stone wins.
 
-Потестуйте, як вестимуть себе тут боти, створені вами для правил 1, 2, 3. 
+Test how the bots you created for the (1, 2, 3) rules perform here.
 
-Розробіть бота, який гратиме краще.
+Develop a bot that plays better under these new rules.
