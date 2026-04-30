@@ -23,3 +23,5 @@ window.world.startTournamentBetweenBots([new BachetBot1("B1"),new BachetBot2("B2
 6. We invite you to try making bots for other game rules variations. You can check some as commented lines in main.js
 
 Good luck!
+
+Please, submit your agent via this form: [https://forms.gle/gfYygXioazSZKbgMA](https://forms.gle/gfYygXioazSZKbgMA)
