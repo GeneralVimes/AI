@@ -1,56 +1,54 @@
-**Instructions for the laboratory work "Q-Learning"**
-In this laboratory work, we will work with a bot that initially makes random moves and then learns how to play and win. We will also see how it adapts to rule changes.
+**Інструкції до виконання лабораторної роботи "Q-Learning"**
+У даній лабораторній роботі ми ознайомимося з ботом, який спочатку робить випадкові ходи, а згодом навчається грати та вигравати. Також подивимося, як від адаптується до зміни правил
 
-**Step 1**
-Open the Lab2 folder. Launch the index.html file in a browser and open the browser console.
-At the start of the main.js script, a game world for Bachet's Game is created, in which players are allowed to take 1, 2, or 3 stones, and the one who takes the last stone wins.
+**Крок 1**
+Відкрийте папку Lab2. Запустіть файл index.html у браузері та відкрийте консоль браузера.
+На старті роботи скрипта main.js створюється ігровий світ для гри Баше, у якій допускається брати 1, 2 чи 3 камінці та виграє той, хто забирає останній предмет.
 
-The bots.js file contains the following bots: BachetBot1, BachetBot2Smart, BachetBot3Smart, BachetBotRandomSmart.
+У файлі bots.js маються наступні боти: BachetBot1, BachetBot2Smart, BachetBot3Smart, BachetBotRandomSmart
 
-They take 1, 2, 3, or a random number of stones respectively, but they do not break the rules by trying to take more stones than are in the pile.
+Вони беруть 1, 2, 3 або випадкови число каменів відповідно, але не порушують правила, намагаючись взяти більше каменів, ніж є у купі
 
-The BachetBot123Best bot has a hard-coded winning strategy for this version of Bachet's Game.
+Бот BachetBot123Best має жорстко запрошграмовану виграшну стратегію для даного варіанта гри Баше
 
-The one to compete with all these bots will be BachetLearnerBot - a bot that implements the Q-Learning self-learning method.
+З усіма цими ботами буде змагатися BachetLearnerBot - бот, який реалізує метод самонавчання Q-Learning
 
-Set up a single-game tournament between the BachetLearnerBot and BachetBotRandomSmart bots.
-To do this, enter the command in the console:
+Влаштуйте турнір з однієї гри між ботами BachetLearnerBot та BachetBotRandomSmart
+Для цього введіть команду у консолі:
 window.world.startTournamentBetweenBots([new BachetLearnerBot("Learn2"),new BachetBotRandomSmart("RND")], 1, 2, true)
 
-Observe the tournament's progress from the console output.
-Then, inspect the memory of the learning bot. To do this, enter the command in the console:
+Подивіться, за виводом у консолі, як йшов турнір
+Потім подивіться, як виглядає пам'ять бота, що вміє навчатися. Для цьго введіть команду у консолі:
 BachetLearnerBot.memory
 
-Find the memory cells whose content does not look like {1: 3, 2: 3, 3: 3}.
-What are these cells? And how does their content correlate with the moves that BachetLearnerBot made in the game?
+Знайдіть комірки пам'яті, зміст яких не виглядає {1: 3, 2: 3, 3: 3}
+Які ці комірки? І як їх зміст співвідноситься з тими ходами, які BachetLearnerBot зробив у грі?
 
-**Step 2**
-Let's plot a graph of BachetLearnerBot's success in a series of tournaments against BachetBotRandomSmart.
-To do this, prepare a table in Excel with the following columns:
+**Крок 2**
+Побудуємо графік успішності BachetLearnerBot у серії турнірів проти BachetBotRandomSmart
+Для цього підготуємо у Excel таблицю з колонками
 
-Tournament Number | Number of games in tournament | Number of games won by BachetLearnerBot
+Номер турніру	Кількість партій у турнірі	Кількість виграних партій ботом BachetLearnerBot
 
-To fill this table, first run tournaments of 10 games.
+Для заповнення цієї таблиці спочатку проводьте турніри з 10 партій 
 window.world.startTournamentBetweenBots([new BachetLearnerBot("Learn2"),new BachetBotRandomSmart("RND")], 10, 2, false)
 
-Run such tournaments 5 times, filling a new row in the table with data each time.
-Next, run 5 tournaments of 100 games.
-Then, run 5 tournaments of 1000 games.
-After that, run 5 tournaments of 10,000 games.
-Finally, run 5 tournaments of 100,000 games each.
+Проведіть такі турніри 5 разів, кожен раз заповнюючи даними новий рядок у таблиці
+Далі проведіть 5 турнірів із 100 партій
+Потім проведіть 5 турнірів із 1000 партій
+Після цього проведіть 5 турнірів із 10000 партій
+Наприкінці, проведіть 5 турнірів із 100000 партій у кожному
 
-Add two more columns to the table:
-Total number of games (cumulative) | Percentage of games won in this tournament
+Додайте до таблиці ще 2 колонки:
+Загальна кількість партій (разом з даним турніром)	Відсоток виграних партій у даному турнірі
+Заповніть їх даними на основі перший трьох заповнених стовпців
+Побудуйте точкову діаграму, задавши для вісі абсцис логарифмічну шкалу
+Підпишіть діаграму та її вісі
 
-Fill them with data based on the first three filled columns.
-Create a scatter plot, setting a logarithmic scale for the x-axis.
-Label the chart and its axes.
-
-**Step 3**
-Let's investigate what happens to BachetLearnerBot's memory.
-Refresh the browser page to reset BachetLearnerBot's memory and run a 10-game tournament against BachetBotRandomSmart.
-Now execute the following command in the console (paste all 7 lines at once):
-
+**Крок 3**
+Дослідимо, що відбувається з пам'яттю BachetLearnerBot
+Оновіть сторінку у браузері, щоб скинути пам'ять BachetLearnerBot та проведіть турнір у 10 партій проти BachetBotRandomSmart
+Тепер виконайте у консолі наступну команду (вставте одразу 7 рядків):
 let s=""
 for (let i=0; i<BachetLearnerBot.memory.length; i++){
     if (i%4!=0){
@@ -59,44 +57,41 @@ for (let i=0; i<BachetLearnerBot.memory.length; i++){
 }
 console.log(s)
 
-This command will iterate through BachetLearnerBot's memory and output the probabilities of choosing winning moves. Copy the output to Excel and label it "Probabilities of choosing a winning move after 10 games with BachetBotRandomSmart".
+Ця команда пробіжиться по пам'яті BachetLearnerBot та виведе імовірності обрати виграшні ходи. Скопіюйте її у Excel та підпишіть "Імовірності обрати виграшний хід після 10 партій з BachetBotRandomSmart"
 
-Create similar tables for 100, 1,000, 10,000, and 100,000 games with BachetBotRandomSmart.
-Create a chart that contains 5 plots based on these 5 tables.
+Зробіть такі ж таблиці для 100, 1000, 10000 та 100000 ігор з BachetBotRandomSmart
+Побудуйте діаграму, яка міститиме 5 графіків, побудованих на основі цих 5 таблиць
 
-**Step 4**
-Create a table like in Step 2, but where BachetLearnerBot's opponents are all the other bots. Run 5 tournaments of 10 games, 5 tournaments of 100 games, 5 of 1,000, 5 of 10,000, and 5 of 100,000.
-Code for running the general tournament:
+**Крок 4**
+Побудуйте таку ж таблицю, як у Кроці 2, якщо супениками BachetLearnerBot будуть усі інші боти. Проведіть 5 турнірів по 10 ігор, 5 турнірів по 100 ігор, 5 по 1000, 5 по 10000 та 5 по 100000.
+Код для проведення загального турніру:
 window.world.startTournamentBetweenBots([new BachetLearnerBot("Learn"),new BachetBot1("B1"), new BachetBot2Smart("B2"), new BachetBot3Smart("B3"), new BachetBotRandomSmart("BR"), new BachetBot123Best("Best")], 10, 2, false)
+Чи вдасться врешті решт боту BachetLearnerBot хоча б іноді перемагати бота BachetBot123Best?
 
-Will the BachetLearnerBot eventually manage to at least sometimes defeat the BachetBot123Best bot?
+**Крок 5**
+Побудуйте таку ж таблицю, як у Кроці 3, якщо суперниками BachetLearnerBot будуть усі інші боти. Проведіть по 1 турніру у 10, 100, 1000, 10000 та 100000 ігор, і після кожного виведіть у консоль імовірності зробити виграшний хід
 
-**Step 5**
-Create a table like in Step 3, where BachetLearnerBot's opponents are all the other bots. Run one tournament each of 10, 100, 1,000, 10,000, and 100,000 games, and after each, output the probabilities of making a winning move to the console.
+**Крок 6**
+Проведіть турнір у 10, 100, 1000, 10000 та 100000 ігор між парою BachetLearnerBot'ів і знов після кожного турніру визначте імовірності зробити виграшний хід
+Порівняйте графіки, отримані на кроках 3, 5 та 6. Які висновки можна зробити?
 
-**Step 6**
-Run a tournament of 10, 100, 1,000, 10,000, and 100,000 games between a pair of BachetLearnerBots and again, after each tournament, determine the probabilities of making a winning move.
-Compare the graphs obtained in steps 3, 5, and 6. What conclusions can be drawn?
+**Крок 7**
+Продумайте такий склад ботів у турнірі, щоб рано чи пізно BachetLearnerBot навчився грати нарівні з BachetBot123Best та обігрувати усіх інших ботів. 
 
-**Step 7**
-Design a tournament roster of bots such that, sooner or later, BachetLearnerBot learns to play on par with BachetBot123Best and defeat all other bots.
-
-When you succeed, reset the BachetLearnerBot's memory by executing the command:
+Коли вийде, скиньте пам'ять BachetLearnerBot'a, виконавши команду 
 BachetLearnerBot.memory=[]
+Після цього проводьте турніри за схемою з Кроку 2 (спочатку 5 турнірів по 10 ігор, потім 5 турнірів по 100 ігор, далі 5 по 1000, 5 по 10000 та 5 по 100000 ігор) та заповніть таблицю
 
-After that, run tournaments according to the scheme from Step 2 (first 5 tournaments of 10 games, then 5 tournaments of 100 games, then 5 of 1,000, 5 of 10,000, and 5 of 100,000 games) and fill in the table.
-
-**Step 8**
-Let's see how BachetLearnerBot adapts to changes in the game rules.
-Start from a situation where BachetLearnerBot is playing on par with BachetBot123Best and defeating all other bots.
-Change the game rules by entering the command:
+**Крок 8**
+Подивимося, як BachetLearnerBot адаптується до зміни правил гри. 
+Почніть з ситуації, коли BachetLearnerBot грає нарівні з BachetBot123Best та обігрує всіх решту ботів
+Змініть правила гри, ввісши команду: 
 window.world.isLastPlayerWinner=false
+Тепер той, хто забирає останній камінь - програє.
 
-Now, the one who takes the last stone loses.
+Продовжуйте проводити турніри за схемою з Кроку 2, записуючи результати BachetLearnerBot у них. Подивіться, як покразуються його результати
 
-Continue running tournaments according to the scheme from Step 2, recording the results of BachetLearnerBot. Observe how its performance changes.
-
-**Creative Task**
-Examine the code of the BachetLearnerBot, specifically how the number of tokens (or "chips") in its memory cells changes in case of a win or loss.
-Try new ideas (for example, increasing the tokens not by 1, but proportionally to the current amount).
-Repeat the experiments from steps 2 and 3 and check if it learns to win faster or slower.
+**Творче завдання**
+Подивіться код бота BachetLearnerBot, а саме - як змінюються кількості фішок у комірках його пам'яті у випадку програшу та виграшу. 
+Спробуйте нові ідеї (наприклад, збільшувати фішки не на 1, а пропорційно поточній кількості)
+Повторіть експерименти з кроків 2 та 3 та перевірте, довше чи швидше він навчиться вигравати

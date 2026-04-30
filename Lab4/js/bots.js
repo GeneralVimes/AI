@@ -7,7 +7,7 @@ class Bot{
 	makeMoveForSituation(gameDataOb){
 		return {}
 	}
-	//bot functions that are called by the game and allow the bot to learn
+	//функції бота, що викликаються грою та дають змогу боту навчитися
 	getInformedOfGameStart(rulesOb){
 		this.currentGameRulesObject=rulesOb
 	}
@@ -19,7 +19,7 @@ class Bot{
 	getInformedOfDefeat(){
 	
 	}
-	//utility function for determining a random number
+	//службова функція для визначення випадкового числа
 	randomNumberFromToIncl(a,b){
 		return a+Math.floor(Math.random()*(b-a+1));
 	}
@@ -27,7 +27,7 @@ class Bot{
 
 class BachetBot1 extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//always takes 1
+	makeMoveForSituation(gameDataOb){//бере 1 завжди
 		return {n:1}
 	}		
 }
@@ -35,7 +35,7 @@ class BachetBot1 extends Bot{
 
 class BachetBot2Smart extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//always takes 2, but takes 1 if there is only 1 stone in the pile
+	makeMoveForSituation(gameDataOb){//бере 2 завжди, але бере 1, якщо у купі є лише 1 камінь
 		if (gameDataOb.N==1){
 			return {n:1}
 		}else{
@@ -47,14 +47,14 @@ class BachetBot2Smart extends Bot{
 
 class BachetBot3Smart extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//takes 3 stones, but not more than the number of stones available in the pile
+	makeMoveForSituation(gameDataOb){//бере 3 каменя, але не більше, ніж наявних камінців у купі
 		return {n:Math.min(gameDataOb.N, 3)}
 	}		
 }
 
 class BachetBotRandomSmart extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//takes 1, 2, or 3, but does not try to take more than what is in the pile
+	makeMoveForSituation(gameDataOb){//бере 1, або 2 або 3, але не намагається взяти більше, ніж є у купі
 		if (gameDataOb.N==1){
 			return {n:1}
 		}else{
@@ -67,7 +67,7 @@ class BachetBotRandomSmart extends Bot{
 	}	
 }
 
-//implements the winning strategy for Bachet's Game with allowed moves 1, 2, 3 and the case where the last stone must be taken to win
+//реалізує виграшну стратегію для гри Баше з допустимими ходами 1, 2, 3 та випадком колои треба забрати останній камінь
 class BachetBot123Best extends Bot{
 	//gameDataOb {N:100}
 	makeMoveForSituation(gameDataOb){
@@ -79,14 +79,14 @@ class BachetBot123Best extends Bot{
 	}		
 }
 
-//a bot that can evolve
+//бот, що вміє еволюціонувати
 class EvoBotSimple extends Bot{
 	constructor(nm, b1, b2){
 		super(nm)
-		//the rules here are an array of 100 numbers, containing the moves to be made for each N
+		//правила тут - масив зі 100 чисел, що містить ходи, які треба робити з усіх N
 		this.rules=[]
-		//if both parent instances are defined, perform crossover
-		//we take part of the array from one of them, and part from the other
+		//якщо визначені обидва батьківських екземплари, виконуємо кроссовер
+		//беремо части масиву з одного з них, частину - з іншого
 		if (b1){
 			if (b2){
 				let rulesDiv = this.randomNumberFromToIncl(Math.floor(b2.rules.length*0.2), Math.floor(b2.rules.length*0.8));
@@ -105,15 +105,15 @@ class EvoBotSimple extends Bot{
 						this.rules.push(b1.rules[i])
 					}				
 				}
-			}else{//if only one parent bot is defined, we create a mutation based on it
+			}else{//якщо визначений лише один з батьківських ботів, то створюємо мутацію на його основі
 				this.rules = b1.rules.slice()
-				//determine the number to be randomly changed
+				//визначаємо число, яке будемо випадково змінювати
 				let rid = this.randomNumberFromToIncl(1,100)
-				//determine the new value of this number from the allowed moves
+				//визначаємо нове значення цього числа з дозволених ходів
 				this.rules[rid]=window.world.allowedMoves[Math.floor(Math.random()*window.world.allowedMoves.length)]
 			}
 		}else{
-			//if we are creating a bot from scratch, we fill its move array with random numbers from the allowed moves
+			//якщо ж створюємо бота з нуля, то заповнюємо його масив хаодів випадковими числами з числа дозволених ходів
 			for (let i=0; i<=100; i++){
 				this.rules.push(
 					window.world.allowedMoves[Math.floor(Math.random()*window.world.allowedMoves.length)]
@@ -127,16 +127,16 @@ class EvoBotSimple extends Bot{
 	}	
 }
 
-//an evolutionary bot with DNA based on divisibility rules
+//еволюційний бот з ДНК, що побудована на правилах подільності
 class EvoBotDiv extends Bot{
 	constructor(nm, b1, b2){
 		super(nm)
-		//can be created just like that, or one or two parent bots can be specified
-		//array of rules, the "DNA" of the bot that determines its behavior
+		//може бути свторений просто так, а можуть бути вказані 1 чи 2 батьківських ботів
+		//масив правил, "ДНК" бота, що визначає його поведінку
 		this.rules=[]
 		if (b1){
 			if (b2){
-				//if both parent bots are specified, the rules array is determined by crossing the parent rules
+				//якщо задані обидва батьківських боти, то масив правил визначається з батьківських правил схрещуванням
 				let rulesDiv2 = this.randomNumberFromToIncl(Math.floor(b2.rules.length*0.2), Math.floor(b2.rules.length*0.8));
 				let rulesDiv1 = this.randomNumberFromToIncl(Math.floor(b1.rules.length*0.2), Math.floor(b1.rules.length*0.8));
 				if (Math.random()<0.5){
@@ -155,38 +155,38 @@ class EvoBotDiv extends Bot{
 					}				
 				}
 			}else{
-				//if there is only one parent bot, copy the rules from it, and then perform a random mutation
+				//якщо батьківський бот один, то кипіюємо правила з нього, а потім робимо випадкову мутацію
 				for (let i=0; i<b1.rules.length; i++){
 					this.createNewRule(b1.rules[i])
 				}
 
 				let mutationId = this.randomNumberFromToIncl(0,5);
 				switch (mutationId){
-					case 0:{//change 'a' in a random rule
+					case 0:{//міняємо а у випадковому правилі
 						let rid = Math.floor(Math.random()*this.rules.length);
 						this.rules[rid].a = 2+Math.floor(Math.random()*8);
 						break;
 					}
-					case 1:{//change 'b' in a random rule
+					case 1:{//міняємо b у випадковому правилі
 						let rid = Math.floor(Math.random()*this.rules.length);
 						this.rules[rid].b = Math.floor(Math.random()*this.rules[rid].a);
 						break;
 					}
-					case 2:{//change 'c' in a random rule
+					case 2:{//міняємо c у випадковому правилі
 						let rid = Math.floor(Math.random()*this.rules.length);
 						this.rules[rid].c = window.world.allowedMoves[Math.floor(Math.random()*window.world.allowedMoves.length)]
 						break;
 					}
-					case 3:{//delete a random rule
+					case 3:{//видаляємо випадкове правило
 						let rid = Math.floor(Math.random()*this.rules.length);
 						this.rules.splice(rid,1)
 						break;
 					}
-					case 4:{//create a new random rule
+					case 4:{//створюємо нове випадкове правило
 						this.createNewRule()
 						break;
 					}
-					case 5:{//swap 2 rules
+					case 5:{//міняємо 2 правила місцями
 						let rid1 = Math.floor(Math.random()*this.rules.length);
 						let rid2 = Math.floor(Math.random()*this.rules.length);
 						let t = this.rules[rid1]
@@ -198,7 +198,7 @@ class EvoBotDiv extends Bot{
 
 			}
 		}else{
-			//all rules are encoded by triplets of numbers a, b, c and look like this: if N%a==b, take c
+			//усі правила кодуються тріками чисел a, b, c і виглядають так: якщо N%a==b, взяти c
 			for (let i=0; i<10; i++){
 				this.createNewRule();
 			}		
@@ -217,7 +217,7 @@ class EvoBotDiv extends Bot{
 
 		this.rules.push({a:a,b:b,c:c});	
 	}
-	//the bot iterates through the existing rules, if it finds a suitable one - it will execute it, otherwise - it will make a random move
+	//бот перебирає наявні правила, якщо знайде підходяще - виконає його, а якщо ні - зробить випадковий хід
 	makeMoveForSituation(gameDataOb){
 		let res = 1+Math.floor(Math.random()*3);
 		for (let i=0; i<this.rules.length; i++){

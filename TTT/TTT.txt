@@ -1,56 +1,55 @@
-**Instructions for the laboratory work "Bots for the game of Tic-Tac-Toe"**
+**Інструкції до виконання лабораторної роботи "Боти для гри Хрестики-нулики"**
+У даній лабораторній роботі ми будемо будувати ботів, які гратимуть у гру "Хрестики-нулики"
 
-In this laboratory work, we will be building bots that play the game of "Tic-Tac-Toe".
+**Крок 1**
+Відкрийте папку TTT. Запустіть файл index.html у браузері та відкрийте консоль браузера.
+На старті роботи скрипта main.js створюється ігровий світ для гри "Хрестики-нулики"
 
-**Step 1**
-Open the TTT folder. Launch the index.html file in a browser and open the browser console.
-At the start of the main.js script, a game world for "Tic-Tac-Toe" is created.
+У файлі bots.js є бот для людини-гравця TTTHumanBot
+При своєму ході бот показує ігрову ситуацію людині та запитує, у яку комірку треба ставити символ
 
-In the bots.js file, there is a bot for a human player, TTTHumanBot.
-On its turn, the bot shows the game situation to the person and asks which cell to place a symbol in.
-
-Play a game between two TTTHumanBot bots:
+Проведіть гру між двома ботами TTTHumanBot
 window.world.startTournamentBetweenBots([new TTTHumanBot("A"), new TTTHumanBot("B")],1,2,true)
 
-**Step 2**
-Among the bots, there is TTTRandomBot, which makes a move into a random empty cell.
-Play a game between TTTHumanBot (which you will be playing as) and TTTRandomBot:
+**Крок 2**
+Серед ботів є TTTRandomBot, який робить хід у випадкову вільну клітинку
+Проведіть гру між TTTHumanBot (за якого гратимете ви) та TTTRandomBot
 window.world.startTournamentBetweenBots([new TTTHumanBot("A"), new TTTRandomBot("RND")],1,2,true)
-Record the game, marking the move numbers next to the placed symbols.
+Запишіть партію, позначаючи поруч з поставленими символами номера ходів
 
-**Step 3**
-Among the bots, there is TTTLearnerBot, which learns using Q-Learning methods.
-Run 1000 games between it and TTTRandomBot:
+**Крок 3**
+Серед ботів є TTTLearnerBot, який навчається, використовуючи методи Q-Learning
+Проведіть 1000 партій між ним та TTTRandomBot
 window.world.startTournamentBetweenBots([new TTTLearnerBot("Learn"), new TTTRandomBot("RND")],1000,2,false)
-Then, play against it as a human player:
+Потім зіграйте як людина-гравець
 window.world.startTournamentBetweenBots([new TTTHumanBot("A"), new TTTLearnerBot("Learn")],1,2,true)
-Record the game, marking the move numbers next to the placed symbols.
+Запишіть партію, позначаючи поруч з поставленими символами номера ходів
 
-**Step 4**
-Examine the memory of the TTTLearnerBot:
+**Крок 4**
+Розгляньте пам'ять TTTLearnerBot'а
 TTTLearnerBot.memory
 
-Consider a position where there are 2 X's and 1 O. For example, this one (if it exists in the bot's memory):
-
+Розгляньте яку-небудь позицію, у якій стоїть 2 хрестика та 1 нулік. Наприклад, таку (якщо вона є у пам'яті бота)
 X| | 
 -----
  |O| 
 -----
  | |X
-To do this, enter:
+ 
+Для цього введіть:
 TTTLearnerBot.memory["X,_,_,_,O,_,_,_,X"]
 
-If such a position is not in memory, investigate another one.
+Якщо такої позиції у пам'яті не буде, дослідіть яку-небудь іншу
 
-On a game board, mark the probabilities with which TTTLearnerBot will choose the next move from this position.
+Позначте на ігровій дошки імовірності, з якими TTTLearnerBot обере наступний хід з цієї позиції
 
-**Step 5**
-Run another 100,000 training games between TTTRandomBot and TTTLearnerBot.
-How will the content of the memory cell corresponding to the position change?
+**Крок 5**
+Проведіть ще 100 000 навчальний партій між TTTRandomBot та TTTLearnerBot
+Як зміниться зміст комірки пам'яті, що відповідає позиції ?
 
-Can the TTTLearnerBot now play to a draw with a human?
+Чи може вже TTTLearnerBot грати внічию з людиною?
 
-How many games will this take?
+Скільки партій для цьього знадобиться?
 
-**Step 6**
-Implement your own bot for the game of Tic-Tac-Toe. We will conduct a tournament among all of your bots during one of the upcoming lectures.
+**Крок 6**
+Реалізуйте власного бота для гри у хрестики-нулики. Серед усіх ваших ботів ми проведемо турнір на одній з наступних лекцій

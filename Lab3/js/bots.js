@@ -7,7 +7,7 @@ class Bot{
 	makeMoveForSituation(gameDataOb){
 		return {}
 	}
-	//bot functions that are called by the game and allow the bot to learn
+	//функції бота, що викликаються грою та дають змогу боту навчитися
 	getInformedOfGameStart(rulesOb){
 		this.currentGameRulesObject=rulesOb
 	}
@@ -19,7 +19,7 @@ class Bot{
 	getInformedOfDefeat(){
 	
 	}
-	//utility function for determining a random number
+	//службова функція для визначення випадкового числа
 	randomNumberFromToIncl(a,b){
 		return a+Math.floor(Math.random()*(b-a+1));
 	}
@@ -27,7 +27,7 @@ class Bot{
 
 class BachetBot1 extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//always takes 1
+	makeMoveForSituation(gameDataOb){//бере 1 завжди
 		return {n:1}
 	}		
 }
@@ -35,7 +35,7 @@ class BachetBot1 extends Bot{
 
 class BachetBot2Smart extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//always takes 2, but takes 1 if there is only 1 stone in the pile
+	makeMoveForSituation(gameDataOb){//бере 2 завжди, але бере 1, якщо у купі є лише 1 камінь
 		if (gameDataOb.N==1){
 			return {n:1}
 		}else{
@@ -47,14 +47,14 @@ class BachetBot2Smart extends Bot{
 
 class BachetBot3Smart extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//takes 3 stones, but not more than the number of stones available in the pile
+	makeMoveForSituation(gameDataOb){//бере 3 каменя, але не більше, ніж наявних камінців у купі
 		return {n:Math.min(gameDataOb.N, 3)}
 	}		
 }
 
 class BachetBotRandomSmart extends Bot{
 	//gameDataOb {N:100}
-	makeMoveForSituation(gameDataOb){//takes 1, 2, or 3, but does not try to take more than what is in the pile
+	makeMoveForSituation(gameDataOb){//бере 1, або 2 або 3, але не намагається взяти більше, ніж є у купі
 		if (gameDataOb.N==1){
 			return {n:1}
 		}else{
@@ -67,7 +67,7 @@ class BachetBotRandomSmart extends Bot{
 	}	
 }
 
-//implements the winning strategy for Bachet's Game with allowed moves 1, 2, 3 and the case where the last stone must be taken to win
+//реалізує виграшну стратегію для гри Баше з допустимими ходами 1, 2, 3 та випадком колои треба забрати останній камінь
 class BachetBot123Best extends Bot{
 	//gameDataOb {N:100}
 	makeMoveForSituation(gameDataOb){
@@ -82,60 +82,60 @@ class BachetBot123Best extends Bot{
 class UniversalBot extends Bot{
 	constructor(nm){
 		super(nm)
-		//array of analyzed game positions
+		//масив проаналізованих ігрових позицій
 		this.analysisOfpositions=[]
 	}
-	//the getInformedOfGameStart function is called at the beginning of each individual game
-	//in it, the bot receives an object with the game rules, rulesOb
-	//rulesOb has properties:
+	//функція getInformedOfGameStart викликається на початку кожної окремої партії
+	//у ній бот отримує об'єкт з правилами гри rulesOb
+	//rulesOb має властивості:
 	/*	{
-		allowedMoves:[1,2,3],//array of allowed moves
-		isLastMoveWinner:true,//whether the one who makes the last move wins
-		numPlayers:2//number of players in one game
+		allowedMoves:[1,2,3],//масив дозволених ходів
+		isLastMoveWinner:true,//чи виграє той, хто робить останній хід
+		numPlayers:2//кількість гравців у одній партії
 	}
 	*/	
 	getInformedOfGameStart(rulesOb){
-		//the bot copies the received rulesOb to this.currentGameRulesObject
+		//бот копіює отриманий rulesOb собі this.currentGameRulesObject
 		this.currentGameRulesObject=rulesOb
-		//then it starts analyzing game positions and determining their type
-		//initially, the type of all positions is undefined
+		//далі він починає аналізувати ігрові позиції та визначаємо їхній тип
+		//спочатку тип усіх позицій - невизначений
 		for (var i=0; i<=100; i++){
 			this.analysisOfpositions[i] = "";
 		}
-		//we set the end-game position to "T" - for Target. After all, the main goal of the game is to leave the opponent with so few stones that they can no longer make a move.
-		//When does the game end?
-		//Firstly, when 0 stones remain.
-		this.analysisOfpositions[0]="T"
-		//But the game might not end at zero. For example, if taking 3, 5, or 6 stones is allowed, then when 1 or 2 stones remain in the pile - that is also the end of the game.
-		//So, we need to find the minimum allowed move (it might not be 1).
+		//у позицію кінця гри ставимо "Ц" - цільові. Адже основною метою гри є залишити супернику стільки камінців, щоб він вже не зміг зробити хід
+		//коли наступає кінецб игр?
+		//по-перше, коли залищається 0 камінців
+		this.analysisOfpositions[0]="Ц"
+		//але гра може закінчитися і не нулем. Наприклад, якщо дозволено брати 3, 5 або 6 камінців, то коли у купі залишається 1 або 2 камінці - це також кінець гри
+		//отже, треба дізнатися мінімальний дозволений хід (він може бути і не 1)
 		var minStep = this.currentGameRulesObject.allowedMoves[0]
 		for (var i =0; i<this.currentGameRulesObject.allowedMoves.length; i++){
 			if (this.currentGameRulesObject.allowedMoves[i]<minStep){
 				minStep=this.currentGameRulesObject.allowedMoves[i]
 			}
 		}
-		//now all positions less than the minimum allowed move are marked as "T" (Target)
+		//тепер всі позиції що менше мінімального дозволеного ходу, позначаємо "Ц"
 		for (var i =0; i<minStep; i++){
-			this.analysisOfpositions[i]="T"
+			this.analysisOfpositions[i]="Ц"
 		}
-		//Next, we need to label all other positions.
-		//Those positions from which one can reach a T or L in one move are marked as W (Winning).
-		//Those positions from which all moves lead to W are L (Losing).
-		//Repeat until everything is filled.
-		for (var j=0; j<=this.analysisOfpositions.length; j++){//iterate through all positions
-			if (this.analysisOfpositions[j]==""){//if the position is not yet defined
-				//then we check all possible moves from it
-				//if at least one move leads to an undefined position, we leave it undefined for now
-				//if all moves lead to "W", we set it to "L" (i.e., if no matter how you move from here, the opponent wins, then you lose)
-				//if at least one move leads to "L" or "T", then this is a "W" (if there is an opportunity to make the opponent lose, we make that move and win)
+		//Далі треба розмітити всі інші позиції
+		//ті позиції, з яких одним ходом можна потрапити у Ц або П, ставимо В (виграш)
+		//ті позиції, з яких всі ходи ведуть у В, це П
+		//повторювати, поки не заповнимо все
+		for (var j=0; j<=this.analysisOfpositions.length; j++){//пробігаємося по всіх позиціях
+			if (this.analysisOfpositions[j]==""){//якщо позиція не визначена
+				//то перебираємо всі можливі ходи з неї
+				//якщо хоча б 1 хід веде у невизначену позицію, залишаємо її невизначено
+				//якщо всі ходи ведуть у "В" то ставимо "П" (тобто, якщо як звідси не ходи, суперник виграє, то сам прораєш)
+				//якщо хоча б 1 хід веде у "П" або "Ц", то це "В" (якщо є можливість зробити так, щоб суперник програв, то робимо такий хід і виграємо)
 				
-				//is there a move from this position to an undefined one?
+				//чи є з цієї позиції ходи у невизначені
 				var hasUndefined=false;
-				//is there a move from this position to a losing one (for the opponent)?
+				//чи є з цієї позиції ходи у програшні
 				var hasLoss = false;
-				//iterate through all allowed moves from the rules
+				//перебираємо всі дозволені ходи з правил
 				for (var i = 0; i<this.currentGameRulesObject.allowedMoves.length; i++){
-					//moveVal is the value of the allowed move
+					//moveVal величина дозволеного ходу
 					var moveVal = this.currentGameRulesObject.allowedMoves[i];
 					var newPos = j-moveVal;
 					if (newPos>=0){
@@ -143,38 +143,38 @@ class UniversalBot extends Bot{
 							hasUndefined=true
 							break;
 						}
-						if (this.analysisOfpositions[newPos]=="T" || this.analysisOfpositions[newPos]=="L"){
+						if (this.analysisOfpositions[newPos]=="Ц" || this.analysisOfpositions[newPos]=="П"){
 							var hasLoss = true;
 						}
 					}
 				}
 				if (!hasUndefined){
 					if (hasLoss){
-						this.analysisOfpositions[j]="W" //Winning
+						this.analysisOfpositions[j]="В"
 					}else{
-						this.analysisOfpositions[j]="L" //Losing
+						this.analysisOfpositions[j]="П"
 					}
 				}
 			}
 		}
-		// console.log("position analysis")
+		// console.log("аналіз позицій")
 		// console.log(this.analysisOfpositions)			
 	}
 
 	
 	makeMoveForSituation(gameDataOb){
 		var selectedMoveVal = -1;
-		//when the Universal bot makes a move, it iterates through all allowed moves
+		//коли Універсальний бот робить хід, він перебирає всі дозволені правилами ходи
 		for (var i=0; i<this.currentGameRulesObject.allowedMoves.length; i++){
 			var moveVal = this.currentGameRulesObject.allowedMoves[i];
 			var newPos = gameDataOb.N-moveVal;	
 			if (newPos>=0){
-				//if this move leads to a losing position (for the opponent), we must make it
-				if (this.analysisOfpositions[newPos]=="T" || this.analysisOfpositions[newPos]=="L"){
+				//якщо даний хід веде у програщну (для супротивника) позицію, маємо його зробити
+				if (this.analysisOfpositions[newPos]=="Ц" || this.analysisOfpositions[newPos]=="П"){
 					selectedMoveVal = moveVal;
 					break;
 				}else{
-					//otherwise - choose a random move
+					//а інакше - обираємо випадковий хід
 					if (selectedMoveVal==-1 || Math.random()<1/(i+1)){
 						selectedMoveVal = moveVal;
 					}
