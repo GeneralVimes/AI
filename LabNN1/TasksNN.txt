@@ -1,32 +1,79 @@
-Завдання на виконання самостійної роботи з теми «Нейронні мережі»
- 1. Створити мережу, яка має розвʼязувати поставлену задачу
- 2. Підготувати для неї навчальні та тестові дані
-Розподіл даних у вибірках повинен бути такій, щоб кожен з випадків, що відповідають кожному з активованих вихідних нейронів, були представлені у приблизно однаковій кількості
- 3. Навчити мережу виконувати задачу. 
- 4. Подати на мережу два різних набори вхідних даних та експортувати її стани до Excel
- 5. Побудувати графік активації вихідних нейронів навченої мережі при зміні значення одного зі вхідних нейронів та фіксованих значеннях решти
- 6. Експортувати навчену мережу у обʼєкт
- 7. Змінити архітектуру мережі (додати чи прибрати внутрішні слої, кількість нейронів на них), але так, що вона залишалася спроможною розвʼязувати задачу
- 8. Побудувати аналогічний графік для модифікованої мережі та експортувати її у обʼєкт та у Excel (при 2х наборах вхідних даних)
+Assignments for Independent Work on the Topic: "Neural Networks"
 
-Задачі для самостійного навчання нейромереж
-1.  Дано 3 числа. Визначити, чи буде їхній добуток додатним чи відʼємним
-2.  Дані 4 числа: a, b, c,d. Визначити, яке з них найменше
-3.  Дано 4 числа. Визначити, скільки серед них відʼємних (може бути 5 варіантів відповіді)
-4.  Дані 5 чисел: a, b, c, d, e. Визначити, яке з чисел c, d, e найближче до середнього арифметичного чисел a та b
-5.  Дані 4 числа: a, b, c, d. Визначити, яка з 6 можливих сум двох з цих чисел - найбільша?
-6.  Дано 3 додатніх числа. Визначити, чи можуть вони бути сторонами трикутника (так чи ні)
-7.  Дані 3 числа: a, b, c. Визначити, який з трьох випадків має місце для суми a+b: вона менше ніж на 10% відрізняється від c; вона більша ніж c (з урахуванням похибки у 10%; вона менша ніж с (з урахуванням похибки 10%)
-8.  Дані 3 числа: a, b, c. Визначити, як вони мають бути розташовані у порядку зростання: abc, acb, bac, bca, cab чи cba
-9.  Дано 6 чисел - координати 3х точок на площині (А, В, С). Треба визначити, який з трьох відрізків: АВ, АС чи ВС, найдовший
-10.  Дано 5 чисел: координати 2х точок на площині та додатнє число d. Треба визначити, чи знаходяться чі точки між собою: ближче, ніж d; ближче, ніж 2d; ближче, ніж 3d; далі, ніж 3d
-11.  Дано 8 чисел - координати 4х точок на площині (А, В, С, D). Треба визначити, який з чотирьох відрізків: АВ, АС, ВС, AD, BD чи CD найдовший
-12.  Дано 6 чисел - координати 3х точок на площині. Вони можуть формувати тупокутний, прямокутний чи гострокутний трикутник (прямокутним вважатимемо трикутник з кутом від 82 до 92 градусів). Навчити мережу визначати це.
-13.  Розглянемо координатну площину, розбиту на 8 частин координатними вісями та графіками функцій y=x та y=-x. За даними координатами точки x, y визначити, у якій з цих 8 частин ця точка знаходиться
-14.  Дано 8 чисел: координати чотирьох точок на площині: A, B, C, D. Визначити, до якої з трьох точок (A, B чи C) точка D знаходиться найближче
-15.  Дано 8 чисел - координати 4х точок на площині (А, В, С, D), які є вершинами прямокутника. Визначити, у якому порядку ці точки йдуть по периметру прямокутника, якщо рухатися за годинниковою стрілкою: ABCD, ABDC, ACBD, ACDB, ADBC чи ADCB
-16.  Дано 8 чисел - координати 4х точок на площині (А, В, С, D). Треба видначити, який з випадків має місце: перетинаються відрізки AB та CD; перетинаються відрізки AC та BD; жоден не перетинається
-17.  Дано 8 чисел: x1, y1, r1, x2, y2, r2 x, y. Числа x1, y1, r1, x2, y2, r2 задають 2 круга, що перетинаються. Визначити, чи знаходиться точка з координатами x, y: лише у першому кругу; лише у другому; у спільній області двох кругів; поза кругами (всього 4 варіанти розташування)
-18.  Дано 11 чисел: x1, y1, r1, x2, y2, r2, x3, y3, r3, x, y. Числа x1, y1, r1, x2, y2, r2, x3, y3, r3 задають 3 круга, що не перетинаються. Визначити, чи знаходиться точка з координатами x, y: всередині деякого круга чи поза ними (всього 4 варіанти розташування)
-19.  Дано 8 чисел - координати 4х точок на площині (А, В, С, D). Треба визначити, який з 4х випадків має місце: точка А лежить всередині трикутника BCD; точка B лежить всередині трикутника ACD; точка D лежить всередині трикутника ABC; всі точки формують опуклий чотирикутник
-20.  На вхід мережі подається 30 нулів та одиниць, що задають двійковий запис натурального числа N. Активуйте один з пʼяти вихідних нейронів мережі відповідно до остачі від ділення числа N на 5
+1.  Create a network designed to solve the assigned problem.
+2.  Prepare training and test data for it. The distribution of data in the
+    samples must be balanced so that each case corresponding to each activated
+    output neuron is represented in approximately equal quantities.
+3.  Train the network to perform the task.
+4.  Input two different sets of data into the network and export its states to
+    Excel.
+5.  Build a graph of the output neurons' activation for the trained network,
+    varying the value of one input neuron while keeping the others fixed.
+6.  Export the trained network as an object (e.g., for use in buildFromObject).
+7.  Modify the network architecture (add or remove hidden layers, or change the
+    number of neurons in them), ensuring that it remains capable of solving the
+    task.
+8.  Build an analogous graph for the modified network and export it as an object
+    and to Excel (using 2 sets of input data).
+
+Problems for Independent Neural Network Training
+
+1.  Product Sign: Given 3 numbers. Determine whether their product will be
+    positive or negative.
+2.  Smallest of Four: Given 4 numbers: a, b, c, d. Determine which one is the
+    smallest.
+3.  Count Negatives: Given 4 numbers. Determine how many of them are negative
+    (there are 5 possible answers: 0, 1, 2, 3, or 4).
+4.  Proximity to Average: Given 5 numbers: a, b, c, d, e. Determine which of the
+    numbers c, d, or e is closest to the arithmetic mean of a and b.
+5.  Largest Pair Sum: Given 4 numbers: a, b, c, d. Determine which of the 6
+    possible sums of two of these numbers is the largest.
+6.  Triangle Existence: Given 3 positive numbers. Determine if they can be the
+    sides of a triangle (Yes or No).
+7.  Margin of Error Sum: Given 3 numbers: a, b, c. Determine which of the three
+    cases applies to the sum a + b: it differs from c by less than 10%; it is
+    greater than c (taking into account the 10% margin); or it is less than c
+    (taking into account the 10% margin).
+8.  Sorting Order: Given 3 numbers: a, b, c. Determine how they should be
+    arranged in ascending order: abc, acb, bac, bca, cab, or cba.
+9.  Longest Segment (3 points): Given 6 numbers representing the coordinates
+    of 3 points on a plane (A, B, C). Determine which of the three segments —
+    AB, AC, or BC — is the longest.
+10. Proximity Zones: Given 5 numbers: the coordinates of 2 points on a plane and
+    a positive number d. Determine the distance category between these points:
+    closer than d; closer than 2d; closer than 3d; or further than 3d.
+11. Longest Segment (4 points): Given 8 numbers representing the coordinates
+    of 4 points on a plane (A, B, C, D). Determine which of the six segments —
+    AB, AC, BC, AD, BD, or CD — is the longest.
+12. Triangle Type: Given 6 numbers representing the coordinates of 3 points on a
+    plane. They can form an obtuse, right, or acute triangle. (Consider a
+    triangle "right-angled" if it has an angle between 82 and 92 degrees). Train
+    the network to determine this.
+13. Coordinate Sectors: Consider a coordinate plane divided into 8 parts by the
+    axes and the lines y = x and y = -x. Given the coordinates of a point
+    (x, y), determine which of these 8 sectors the point is in.
+14. Nearest Neighbor: Given 8 numbers representing the coordinates of four
+    points on a plane: A, B, C, D. Determine to which of the three points (A, B,
+    or C) point D is closest.
+15. Rectangle Perimeter: Given 8 numbers representing the coordinates of 4
+    points (A, B, C, D) that are vertices of a rectangle. Determine the order in
+    which these points appear along the perimeter if moving clockwise:
+    ABCD, ABDC, ACBD, ACDB, ADBC, or ADCB.
+16. Segment Intersection: Given 8 numbers representing the coordinates of 4
+    points (A, B, C, D). Determine which case occurs: segments AB and CD
+    intersect; segments AC and BD intersect; or neither pair intersects.
+17. Point in Two Circles: Given 8 numbers: x_1, y_1, r_1, x_2, y_2, r_2, x, y.
+    The first six numbers define two intersecting circles. Determine if the
+    point (x, y) is: only in the first circle; only in the second; in the
+    overlapping area of both; or outside both (4 possible locations).
+18. Point in Three Circles: Given 11 numbers:
+    x_1, y_1, r_1, x_2, y_2, r_2, x_3, y_3, r_3, x, y. The first nine numbers
+    define 3 non-intersecting circles. Determine if point (x, y) is: inside one
+    of the circles or outside all of them (4 possible outcomes).
+19. Point in Triangle/Convexity: Given 8 numbers representing the coordinates
+    of 4 points (A, B, C, D). Determine which of 4 cases occurs: point A lies
+    inside triangle BCD; point B lies inside triangle ACD; point D lies inside
+    triangle ABC; or all points form a convex quadrilateral.
+20. Binary Modulo 5: The network input receives 30 zeros and ones representing
+    the binary notation of a natural number N. Activate one of the five output
+    neurons corresponding to the remainder of N divided by 5.

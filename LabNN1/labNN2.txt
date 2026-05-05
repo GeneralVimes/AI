@@ -1,86 +1,109 @@
-Лабораторна робота з навчання нейромереж №1
-Навчимо нейромережу порівнювати числа по більш складному алгоритму
-Нехай вона також визначає випадок, коли числа приблизно дорівнюють один одному
+Laboratory work on neural network training №2
 
-Тоді на вихідному слої будуть 3 нейрони. 
-Перший буде активуватися, якщо перше число перевищує друге більше ніж на 5%
-Другий нейрон буде активуватися, якщо перше число знаходиться в межах відхилення у 5% від другого
-І третій нейрон активується, якщо перше число менше, ніж друге з врахуванням похибки у 5%
+Let's train a neural network to compare numbers using a more complex algorithm.
+Let's make it also determine the case when the numbers are approximately equal
+to each other.
 
-Що для цього потрібно модифікувати в скрипті навчання?
+In this case, there will be 3 neurons in the output layer:
 
-По-перше, в мережі потрібно зробити 3 вихідних нейрони
+1.  The first will activate if the first number exceeds the second by more
+    than 5%.
+2.  The second neuron will activate if the first number is within a 5% deviation
+    from the second.
+3.  And the third neuron will activate if the first number is less than the
+    second, taking into account the 5% margin of error.
 
-Далі модифікуємо функцію, яка визначає правильну відповідь мережі при її навчанні
-Вона має повертати 0, якщо перше число більше ніж друге, збільшене на 5%
-повертати 2, якщо першее число менше ніж перше число, зменшене на 5%
-і повертати 1 в усіх інших випадках
-Ось що в ній має бути:
+What needs to be modified in the training script for this?
 
-		let x = input_arr[0]
-		let y = input_arr[1]
-		if (x>y+0.05*Math.abs(y)){
-			return 0
-		}else{
-			if (x<y-0.05*Math.abs(y)){
-				return 2
-			}else{
-				return 1
-			}			
-		}
+Firstly, you need to create 3 output neurons in the network.
 
-зверніть увагу, що для визначення меж ми беремо модуль від числа, щоб код працював і для від'ємних чисел
+Next, we modify the function that determines the correct network response during
+training. It should return 0 if the first number is greater than the second
+increased by 5%; return 2 if the first number is less than the second decreased
+by 5%; and return 1 in all other cases. Here is what should be inside it:
 
-Зміни потрібні в генерації навчальної вибірки. Ми не можемо тепер обидва вхідних числа брати випадковими, і ось чому
-У навчальній вибірці потрібно в рівній мірі відобразити всі ситуації, з якими мережа стикнеться
-А якщо генерувати числа випадково, то випадок наближеної рівності (в межах 5%) буде дуже рідко зустрічатися
+let x = input_arr[0]
+let y = input_arr[1]
+if (x > y + 0.05 * Math.abs(y)) {
+    return 0
+} else {
+    if (x < y - 0.05 * Math.abs(y)) {
+        return 2
+    } else {
+        return 1
+    }			
+}
 
-Отже, генерацію навчальних даних проведемо таким чином
-Згенеруємо друге число випадково.
-перше число згенеруєхмо у межах відхилення 5% від першого
-Далі, у 33% випадків перегенеруємо перше число так, щоб воно було явно менше другого
-У ще у 33% випадків перегенеруємо перше число так, щоб воно було явно більше другого
+Please note that to determine the boundaries, we take the absolute value
+(modulus) of the number (Math.abs(y)) so that the code works for negative
+numbers as well.
 
-    	let y = Math.random()*20-10
-		let x = y+Math.abs(y)*(0.05-0.1*Math.random())
-		let rnd = Math.random()
-		if (rnd<0.33){
-			x=y-Math.abs(y)*0.05-Math.random()*20
-		}
-		if (rnd>0.67){
-			x=y+Math.abs(y)*0.05+Math.random()*20
-		}
+Changes are also needed in the generation of the training sample. We can no
+longer take both input numbers randomly, and here is why: in the training
+sample, we need to equally represent all situations the network will encounter.
+If we generate numbers purely randomly, the case of approximate equality
+(within 5%) will occur very rarely.
 
-Так само будемо поступати при генерації тестових даних. З тією лише відмінністю, що діапазон для них візьмемо від -1000 до 1000 (щоб перевірити, як мережа навчилася узагальнювати поняття порівняння)
+Therefore, we will perform the generation of training data as follows:
 
-        let y = Math.random()*2000-1000
-		let x = y+Math.abs(y)*(0.05-0.1*Math.random())
-		let rnd = Math.random()
-		if (rnd<0.33){
-			x=y-Math.abs(y)*0.05-Math.random()*2000
-		}
-		if (rnd>0.67){
-			x=y+Math.abs(y)*0.05+Math.random()*2000
-		}
+1.  Generate the second number randomly.
+2.  Generate the first number within a 5% deviation from the first.
+3.  Next, in 33% of cases, regenerate the first number so that it is clearly
+    smaller than the second.
+4.  In another 33% of cases, regenerate the first number so that it is clearly
+    larger than the second.
 
-Після всіх цих перебудов у файлі main.js проведіть наступні виміри запишіть у звіт:
-Точність роботи мережі на тестових даних
+let y = Math.random() * 20 - 10
+let x = y + Math.abs(y) * (0.05 - 0.1 * Math.random())
+let rnd = Math.random()
+if (rnd < 0.33) {
+    x = y - Math.abs(y) * 0.05 - Math.random() * 20
+}
+if (rnd > 0.67) {
+    x = y + Math.abs(y) * 0.05 + Math.random() * 20
+}
 
-Подайте на вхід мережі довільно обрану пару чисел та запишіть у звіт ці числа та рівні активації вихідних нейронів мережі
-Зробіть так ще з двома прикладами. Числа для прикладів підберіть так, щоб були розглянуті всі випадки: більше, менше та приблизна рівність
+We will do the same when generating the test data. The only difference is that
+we will take the range for them from -1000 to 1000 (to check how the network
+learned to generalize the concept of comparison).
 
-Подайте на вхід мережі довільно обрану пару чисел та експортуйте мережу у Excel
+let y = Math.random() * 2000 - 1000
+let x = y + Math.abs(y) * (0.05 - 0.1 * Math.random())
+let rnd = Math.random()
+if (rnd < 0.33) {
+    x = y - Math.abs(y) * 0.05 - Math.random() * 2000
+}
+if (rnd > 0.67) {
+    x = y + Math.abs(y) * 0.05 + Math.random() * 2000
+}
 
-Побудуйте графіки активації вихідних нейронів мережі, якщо на вхід подається два числа. Перше з чисел пробігає діапазон від 0 до 20 з кроком 0.1, а друге число дорівнює 10
-Побудуйте графіки активації вихідних нейронів мережі, якщо на вхід подається два числа. Перше з чисел пробігає діапазон від 80 до 120 з кроком 0.1, а друге число дорівнює 100
+After all these adjustments in the main.js file, perform the following
+measurements and record them in the report:
 
-Самостійне завдання:
-Приступайте до нього захистивши попередні кроки роботи. Або виконуйте у копії папки, оскільки воно преедбачає зміни у файлі main.js
+1.  The accuracy of the network on the test data.
+2.  Provide a randomly chosen pair of numbers to the network input and record
+    these numbers and the activation levels of the output neurons in the report.
+    Do this with two more examples. Select the numbers for the examples so that
+    all cases are covered: greater, smaller, and approximate equality.
+3.  Provide a randomly chosen pair of numbers to the network input and export
+    the network state to Excel.
+4.  Build graphs of the output neurons' activations if two numbers are fed to
+    the input. The first of the numbers should run through the range from 0
+    to 20 with a step of 0.1, and the second number should equal 10.
+5.  Build graphs of the output neurons' activations if two numbers are fed to
+    the input. The first of the numbers should run through the range from 80
+    to 120 with a step of 0.1, and the second number should equal 100.
 
-Побудуйте нейромережу, яка навчиться порівнювати суму двох чисел з третім числом. На вхід мережі будуть подаватися три  числа: a, b, c
-Перший нейрон активуватиметься, якщо сума чисел a та b перевищує число c більше ніж на 5%  
-Другий нейрон активуватиметься, якщо a та b відхиляється від числа с не більше ніж на 5% у будь-який бік
-Третій нейрон активується, якщо сума чисел а та b менша, ніж число с зменшене на 5%
+Independent Task: Proceed to this task after defending the previous steps of the
+work. Or perform it in a copy of the folder, as it involves changes to the
+main.js file.
 
+Build a neural network that learns to compare the sum of two numbers with a
+third number. Three numbers will be fed to the network input: a, b, c.
 
-
+  - The first neuron should activate if the sum of numbers a and b exceeds
+    number c by more than 5%.
+  - The second neuron should activate if a + b deviates from number c by no more
+    than 5% in either direction.
+  - The third neuron activates if the sum of numbers a and b is less than number
+    c decreased by 5%.

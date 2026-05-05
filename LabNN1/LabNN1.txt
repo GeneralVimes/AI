@@ -1,55 +1,67 @@
-Лабораторна робота з навчання нейромереж №1
-Виконувати роботу краще у браузері Chrome
+Laboratory work on neural network training №1
+It is best to perform this work in the Chrome browser.
 
-Крок 1.  
-Файл main.js містить код побудови та навчання нейромережі, що порівнює два числа
-Запустить index.html 
-Переконайтеся, що число виведене в консолі є більшим за 0.9
-Це результативність навченої мережі
-Запишіть його
+Step 1.
+The file main.js contains the code for building and training a neural network
+that compares two numbers.
+Run index.html.
+Ensure that the number displayed in the console is greater than 0.9.
+This is the performance (accuracy) of the trained network.
+Record this value.
 
-Перевірте на якісь парі чисел, як навчена мережа ї розпізнає
-Для цього введіть у консоль 
+Check how the trained network recognizes a specific pair of numbers.
+To do this, enter the following into the console:
 window.network.calculateOutsForInputs([5,10])
 window.network.getOutputs()
 
-Ви побачите, якою буде активація вихідного шару нейромережі для вхідних чисел
+You will see what the activation of the output layer of the neural network is
+for these input numbers.
 
-Придумайте самі та спробуйте ще 3 приклади для вхідних даних. Запишіть для них активацію мережі
+Come up with 3 more examples of input data yourself and try them. Record the
+network activation for each of them.
 
-Крок 2.
-Роздивимося мережу у деталях. 
-Подайте на вхід числа 6 та 7:
+Step 2.
+Let's examine the network in detail.
+Provide the numbers 6 and 7 as input:
 window.network.calculateOutsForInputs([6,7])
 
-Тепер виведемо мережу цілком
-Для цього введіть команду 
+Now let's export the entire network.
+To do this, enter the command:
 window.network.export2Text()
 
-Правою кнопкою по виведеному тексту - Copy String Content - і вставте дані з буфера у Excel
-У Excel може знадобитися ще замінити точки на коми для кращого форматування
+Right-click on the outputted text — Copy String Content — and paste the data
+from the buffer into Excel.
+In Excel, you might need to replace dots with commas (depending on your regional
+settings) for better formatting.
 
-Крок 3.
-Ви бачите, що значення вихідних нейронів не дорівнюють точно 0 та 1
-Трошки підучимо мережу.
-Вкажіть мережі, що для цих вхідних даних ідеальною активацієї вихідногшо слоя буде масив [0,1]
+Step 3.
+You can see that the values of the output neurons are not exactly equal to 0
+and 1.
+Let's "fine-tune" the network a little bit.
+Tell the network that for these specific input data, the ideal activation of the
+output layer should be the array [0,1]:
 window.network.calculateErrors([0,1])
 
-Тепер нехай мережа зробить підлаштовування вагових коефіцієнтів із коефіцієнтом 0.25 (щоб ефект підлаштовування був явніший)
+Now, let the network perform an adjustment of the weight coefficients with a
+learning rate (coefficient) of 0.25 (to make the adjustment effect more
+obvious):
 window.network.adjustParams(0.25)
 
-Знов подамо на вхід пару чисел 6 та 7 та роздивимося мережу в деталях
-
+Provide the pair of numbers 6 and 7 as input again and examine the network in
+detail:
 window.network.calculateOutsForInputs([6,7])
 window.network.export2Text()
 
-Цього разу вставте мережу на інший лист Excel
+This time, paste the network data onto a different Excel sheet.
 
-Порівняйте, як змінився вихід мережі після одного кроку навчання та як змінилися її внутрішні вагові коефіцієнти
+Compare how the network's output changed after one training step and how its
+internal weight coefficients were modified.
 
-Крок 4.
-Дослідимо в деталях, як буде мінятися активація вихідних нейронів, якщо ми будемо міняти числа, що подаються на вхід
-Будемо подавати на вхід пару чисел [6, x], де число х пробігатиме від 0 до 12 з кроком 0.1
+Step 4.
+Let's investigate in detail how the activation of the output neurons changes if
+we vary the numbers provided as input.
+We will feed the network a pair of numbers [6, x], where the number x runs
+from 0 to 12 with a step of 0.1.
 
 var ar=[]
 for (var x=0; x<=12; x+=0.1){
@@ -60,14 +72,18 @@ for (var x=0; x<=12; x+=0.1){
 }
 console.table(ar)
 
-Ви отримаєте таблицу, перша колонка якої - значеня х, а далі йдуть активації першого та другого нейронів для даного х
-Побудуйте графіки активації нейронів в Excel
+You will get a table where the first column is the value of x, followed by the
+activations of the first and second neurons for that given x.
+Build the neuron activation graphs in Excel.
 
-Крок 5.
-Поекспериментуємо, як внутрішня будова мережі влине на її здатність розв'язувати задачу.
-Внесіть зміну у мережу:
-змініть кількість нейронів на внутрішньому шарі, або кількість внутрішніх шарів, або активаційну функцію (як другий параметр у createLayer допишіть "relu" або "leakyrelu" або "softmax")
-Пройдуть для неї кроки 1-4
+Step 5.
+Let's experiment with how the internal structure of the network affects its
+ability to solve the problem.
+Make a change to the network:
+Change the number of neurons in the internal (hidden) layer, or the number of
+internal layers, or the activation function (add "relu", "leakyrelu", or
+"softmax" as the second parameter in createLayer).
+Repeat steps 1-4 for this new configuration.
 
-На захисті продемонструйте свої записи та таблиці та покажіть, як зміна структури мережі вплинула на її здатність розв'язувати задачу
-
+During the lab defense, demonstrate your records and tables, and show how the
+change in the network structure affected its ability to solve the task.
