@@ -103,7 +103,7 @@ window.onload=function(){
 	let numCorrectAnswers=0;
 	let numErrors=0;
 	for (let i=0; i<testingData.length; i++){
-		let dataOb = learningData[i];
+		let dataOb = testingData[i];
 		
 		let input_arr = dataOb.input_arr
 		let answerNeuron = dataOb.correct_neuron_id
